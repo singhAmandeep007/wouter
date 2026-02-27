@@ -1,4 +1,5 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
+import { ActiveLink } from "../shared/routing/ActiveLink";
 import "./layout.css";
 
 type NavItem = {
@@ -10,21 +11,19 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Catalog", href: "/catalog" },
   { label: "Settings", href: "/settings" },
+  { label: "Admin", href: "/admin" },
   { label: "History Demo", href: "/history" },
 ];
 
 function SidebarLink({ href, label }: NavItem) {
-  const [location] = useLocation();
-  const isActive = location === href || location.startsWith(`${href}/`);
-
   return (
     <li>
-      <Link
-        className={isActive ? "sidebar-link is-active" : "sidebar-link"}
+      <ActiveLink
+        className="sidebar-link"
         href={href}
       >
         {label}
-      </Link>
+      </ActiveLink>
     </li>
   );
 }

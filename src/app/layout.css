@@ -93,3 +93,8 @@
   padding: 0.35rem 0.5rem;
   text-decoration: none;
 }
+
+.module-links a.is-active {
+  background: #efefef;
+  border-color: #999;
+}

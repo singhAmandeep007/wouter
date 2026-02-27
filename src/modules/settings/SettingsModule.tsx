@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Link, Route, Switch } from "wouter";
 import { api } from "../../shared/api/client";
+import { ActiveLink } from "../../shared/routing/ActiveLink";
 import type { PaymentMethod, UserProfile } from "../../shared/api/types";
 import "./settings.css";
 
@@ -13,13 +14,23 @@ function SettingsIndex() {
       <p>Default settings route. Choose a nested route:</p>
       <ul className="module-links">
         <li>
-          <Link href="/settings/profile">Profile</Link>
+          <ActiveLink
+            exact
+            href="/settings/profile"
+          >
+            Profile
+          </ActiveLink>
         </li>
         <li>
-          <Link href="/settings/orders">Orders (sub-router)</Link>
+          <ActiveLink href="/settings/orders">Orders (sub-router)</ActiveLink>
         </li>
         <li>
-          <Link href="/settings/payment">Payment</Link>
+          <ActiveLink
+            exact
+            href="/settings/payment"
+          >
+            Payment
+          </ActiveLink>
         </li>
       </ul>
     </section>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Route, Switch } from "wouter";
 import { api } from "../../shared/api/client";
+import { ActiveLink } from "../../shared/routing/ActiveLink";
 import type { Category, Product } from "../../shared/api/types";
 import "./catalog.css";
 
@@ -112,10 +113,15 @@ function CatalogModule() {
   return (
     <section>
       <h2>Catalog Module Routes</h2>
-      <ul>
+      <ul className="module-links">
         {routeHints.map((path) => (
           <li key={path}>
-            <Link href={path}>{path}</Link>
+            <ActiveLink
+              exact
+              href={path}
+            >
+              {path}
+            </ActiveLink>
           </li>
         ))}
       </ul>

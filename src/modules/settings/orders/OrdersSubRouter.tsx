@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Route, Switch } from "wouter";
 import { api } from "../../../shared/api/client";
+import { ActiveLink } from "../../../shared/routing/ActiveLink";
 import type { Order } from "../../../shared/api/types";
 
 function OrdersDefault() {
@@ -101,13 +102,23 @@ function OrdersSubRouter() {
       <h3>Orders Sub Router</h3>
       <ul className="module-links">
         <li>
-          <Link href="/settings/orders">/settings/orders</Link>
+          <ActiveLink href="/settings/orders">/settings/orders</ActiveLink>
         </li>
         <li>
-          <Link href="/settings/orders/o-5001">/settings/orders/o-5001</Link>
+          <ActiveLink
+            exact
+            href="/settings/orders/o-5001"
+          >
+            /settings/orders/o-5001
+          </ActiveLink>
         </li>
         <li>
-          <Link href="/settings/orders/o-5001/items/oi-1">/settings/orders/o-5001/items/oi-1</Link>
+          <ActiveLink
+            exact
+            href="/settings/orders/o-5001/items/oi-1"
+          >
+            /settings/orders/o-5001/items/oi-1
+          </ActiveLink>
         </li>
       </ul>
 

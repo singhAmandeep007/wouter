@@ -5,6 +5,7 @@ import { AppLayout } from "./app/AppLayout";
 const DashboardModule = lazy(() => import("./modules/dashboard/DashboardModule"));
 const CatalogModule = lazy(() => import("./modules/catalog/CatalogModule"));
 const SettingsModule = lazy(() => import("./modules/settings/SettingsModule"));
+const AdminModule = lazy(() => import("./modules/admin/AdminModule"));
 const HistoryModule = lazy(() => import("./modules/history/HistoryModule"));
 
 function LoadingRoute() {
@@ -25,6 +26,9 @@ function NotFoundRoute() {
         </li>
         <li>
           <Link href="/settings">Settings</Link>
+        </li>
+        <li>
+          <Link href="/admin">Admin</Link>
         </li>
       </ul>
     </section>
@@ -53,6 +57,12 @@ function App() {
           </Route>
           <Route path="/settings">
             <SettingsModule />
+          </Route>
+          <Route path="/admin/*">
+            <AdminModule />
+          </Route>
+          <Route path="/admin">
+            <AdminModule />
           </Route>
           <Route path="/history">
             <HistoryModule />
