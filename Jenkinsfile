@@ -51,10 +51,12 @@ pipeline {
 
   post {
     always {
-      node {
-        junit allowEmptyResults: true, testResults: 'test-results/e2e-junit.xml'
+      script {
+        node('') {
+          junit allowEmptyResults: true, testResults: 'test-results/e2e-junit.xml'
 
-        archiveArtifacts artifacts: 'dist/bundle-report.html,dist/bundle-budget-report.json,playwright-report/**,test-results/**', allowEmptyArchive: true
+          archiveArtifacts artifacts: 'dist/bundle-report.html,dist/bundle-budget-report.json,playwright-report/**,test-results/**', allowEmptyArchive: true
+        }
       }
     }
   }
