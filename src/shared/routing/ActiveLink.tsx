@@ -7,14 +7,28 @@ type ActiveLinkProps = {
   className?: string;
   activeClassName?: string;
   exact?: boolean;
+  testId?: string;
 };
 
-function isRouteActive(location: string, href: string, exact: boolean) {
-  if (exact) {
-    return location === href;
+function normalizePath(path: string) {
+  const [pathWithoutQuery] = path.split(/[?#]/);
+
+  if (!pathWithoutQuery || pathWithoutQuery === "/") {
+    return "/";
   }
 
-  return location === href || location.startsWith(`${href}/`);
+  return pathWithoutQuery.endsWith("/") ? pathWithoutQuery.slice(0, -1) : pathWithoutQuery;
+}
+
+function isRouteActive(location: string, href: string, exact: boolean) {
+  const normalizedLocation = normalizePath(location);
+  const normalizedHref = normalizePath(href);
+
+  if (exact) {
+    return normalizedLocation === normalizedHref;
+  }
+
+  return normalizedLocation === normalizedHref || normalizedLocation.startsWith(`${normalizedHref}/`);
 }
 
 export function ActiveLink({
@@ -23,6 +37,7 @@ export function ActiveLink({
   className = "",
   activeClassName = "is-active",
   exact = false,
+  testId,
 }: ActiveLinkProps) {
   const [location] = useLocation();
   const isActive = isRouteActive(location, href, exact);
@@ -31,6 +46,7 @@ export function ActiveLink({
   return (
     <Link
       className={mergedClassName}
+      data-testid={testId}
       href={href}
     >
       {children}

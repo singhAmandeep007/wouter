@@ -9,7 +9,10 @@ const OrdersSubRouter = lazy(() => import("./orders/OrdersSubRouter"));
 
 function SettingsIndex() {
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="settings-home-page"
+    >
       <h2>Settings Home</h2>
       <p>Default settings route. Choose a nested route:</p>
       <ul className="module-links">
@@ -17,17 +20,24 @@ function SettingsIndex() {
           <ActiveLink
             exact
             href="/settings/profile"
+            testId="settings-tab-profile"
           >
             Profile
           </ActiveLink>
         </li>
         <li>
-          <ActiveLink href="/settings/orders">Orders (sub-router)</ActiveLink>
+          <ActiveLink
+            href="/settings/orders"
+            testId="settings-tab-orders"
+          >
+            Orders (sub-router)
+          </ActiveLink>
         </li>
         <li>
           <ActiveLink
             exact
             href="/settings/payment"
+            testId="settings-tab-payment"
           >
             Payment
           </ActiveLink>
@@ -49,7 +59,10 @@ function ProfileRoute() {
   }
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="settings-profile-page"
+    >
       <h2>Profile</h2>
       <p>Name: {profile.name}</p>
       <p>Email: {profile.email}</p>
@@ -66,7 +79,10 @@ function PaymentRoute() {
   }, []);
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="settings-payment-page"
+    >
       <h2>Payment Methods</h2>
       <ul>
         {methods.map((method) => (
@@ -81,7 +97,10 @@ function PaymentRoute() {
 
 function SettingsNotFound() {
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="settings-not-found"
+    >
       <h2>Settings route not found</h2>
       <p>
         Go back to <Link href="/settings">settings home</Link>
@@ -92,7 +111,7 @@ function SettingsNotFound() {
 
 function SettingsModule() {
   return (
-    <section>
+    <section data-testid="settings-module">
       <h2>Settings Module Routes</h2>
       <Switch>
         <Route path="/settings">

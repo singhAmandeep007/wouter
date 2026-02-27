@@ -15,7 +15,10 @@ function CatalogHome() {
   }, []);
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="catalog-home-page"
+    >
       <h2>Catalog Home</h2>
       <p>This is the default route for the catalog module.</p>
 
@@ -48,7 +51,10 @@ function CategoryProducts({ categoryId }: { categoryId: string }) {
   }, [categoryId]);
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="catalog-category-page"
+    >
       <h2>Category: {categoryId}</h2>
       <ul>
         {products.map((product) => (
@@ -81,7 +87,10 @@ function ProductDetails({ productId }: { productId: string }) {
   }
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="catalog-product-page"
+    >
       <h2>{product.title}</h2>
       <p>{product.description}</p>
       <p>Price: ${product.price}</p>
@@ -95,7 +104,10 @@ function ProductDetails({ productId }: { productId: string }) {
 
 function CatalogNotFound() {
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="catalog-not-found"
+    >
       <h2>Catalog route not found</h2>
       <p>
         Go to <Link href="/catalog">catalog default route</Link>.
@@ -111,7 +123,7 @@ function CatalogModule() {
   );
 
   return (
-    <section>
+    <section data-testid="catalog-module">
       <h2>Catalog Module Routes</h2>
       <ul className="module-links">
         {routeHints.map((path) => (
@@ -119,6 +131,7 @@ function CatalogModule() {
             <ActiveLink
               exact
               href={path}
+              testId={`catalog-hint-${path.replaceAll("/", "-").replace(/^-+/, "")}`}
             >
               {path}
             </ActiveLink>

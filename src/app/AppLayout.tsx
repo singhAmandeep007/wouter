@@ -16,11 +16,14 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 function SidebarLink({ href, label }: NavItem) {
+  const navTestId = `nav-${href.replaceAll("/", "-").replace(/^-+/, "")}`;
+
   return (
     <li>
       <ActiveLink
         className="sidebar-link"
         href={href}
+        testId={navTestId}
       >
         {label}
       </ActiveLink>
@@ -33,7 +36,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="app-shell">
-      <header className="navbar">
+      <header
+        className="navbar"
+        data-testid="navbar"
+      >
         <div>
           <h1>Wouter E-Commerce Demo</h1>
           <p className="subtitle">Modular routes, nested routes, lazy loading, mock APIs</p>
@@ -56,7 +62,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       <div className="content-shell">
-        <aside className="sidebar">
+        <aside
+          className="sidebar"
+          data-testid="sidebar"
+        >
           <h2>Navigation</h2>
           <ul>
             {NAV_ITEMS.map((item) => (
@@ -69,7 +78,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </ul>
         </aside>
 
-        <main className="main-content">{children}</main>
+        <main
+          className="main-content"
+          data-testid="main-content"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

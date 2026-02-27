@@ -1,5 +1,5 @@
-import { Suspense, lazy } from "react";
-import { Link, Route, Switch } from "wouter";
+import { Suspense, lazy, useEffect } from "react";
+import { Link, Route, Switch, useLocation } from "wouter";
 import { AppLayout } from "./app/AppLayout";
 
 const DashboardModule = lazy(() => import("./modules/dashboard/DashboardModule"));
@@ -9,12 +9,12 @@ const AdminModule = lazy(() => import("./modules/admin/AdminModule"));
 const HistoryModule = lazy(() => import("./modules/history/HistoryModule"));
 
 function LoadingRoute() {
-  return <p>Loading module...</p>;
+  return <p data-testid="route-loading">Loading module...</p>;
 }
 
 function NotFoundRoute() {
   return (
-    <section>
+    <section data-testid="global-not-found">
       <h2>Route not found</h2>
       <p>The route does not exist. Try one of these modules:</p>
       <ul>
@@ -35,13 +35,24 @@ function NotFoundRoute() {
   );
 }
 
+function RootRedirect() {
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    void navigate("/dashboard", { replace: true });
+  }, [navigate]);
+
+  return <p data-testid="root-redirecting">Redirecting to dashboard...</p>;
+}
+
 function App() {
   return (
     <AppLayout>
       <Suspense fallback={<LoadingRoute />}>
         <Switch>
           <Route path="/">
-            <DashboardModule />
+            <RootRedirect />
+            {/* <DashboardModule /> */}
           </Route>
           <Route path="/dashboard">
             <DashboardModule />

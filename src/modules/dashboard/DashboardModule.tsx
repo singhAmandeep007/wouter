@@ -24,7 +24,10 @@ function DashboardModule() {
   }
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="dashboard-module"
+    >
       <h2>Dashboard</h2>
       <p>Welcome back, {summary.profile.name}</p>
       <p>Open orders: {summary.openOrders}</p>

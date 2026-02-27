@@ -12,7 +12,10 @@ function OrdersDefault() {
   }, []);
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="orders-list-page"
+    >
       <h3>Orders List (Default)</h3>
       <ul>
         {orders.map((order) => (
@@ -37,7 +40,10 @@ function OrderDetails({ orderId }: { orderId: string }) {
   }
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="order-details-page"
+    >
       <h3>Order {order.id}</h3>
       <p>Status: {order.status}</p>
       <p>Total: ${order.totalAmount}</p>
@@ -72,7 +78,10 @@ function OrderItemDetails({ orderId, itemId }: { orderId: string; itemId: string
   }
 
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="order-item-details-page"
+    >
       <h3>Order Item Details</h3>
       <p>Order: {orderId}</p>
       <p>Item: {item.title}</p>
@@ -87,7 +96,10 @@ function OrderItemDetails({ orderId, itemId }: { orderId: string; itemId: string
 
 function OrdersNotFound() {
   return (
-    <section className="module-card">
+    <section
+      className="module-card"
+      data-testid="orders-not-found"
+    >
       <h3>Orders sub-route not found</h3>
       <p>
         Return to <Link href="/settings/orders">orders list</Link>.
@@ -98,16 +110,23 @@ function OrdersNotFound() {
 
 function OrdersSubRouter() {
   return (
-    <section>
+    <section data-testid="orders-sub-router">
       <h3>Orders Sub Router</h3>
       <ul className="module-links">
         <li>
-          <ActiveLink href="/settings/orders">/settings/orders</ActiveLink>
+          <ActiveLink
+            exact
+            href="/settings/orders"
+            testId="orders-tab-list"
+          >
+            /settings/orders
+          </ActiveLink>
         </li>
         <li>
           <ActiveLink
             exact
             href="/settings/orders/o-5001"
+            testId="orders-tab-order"
           >
             /settings/orders/o-5001
           </ActiveLink>
@@ -116,6 +135,7 @@ function OrdersSubRouter() {
           <ActiveLink
             exact
             href="/settings/orders/o-5001/items/oi-1"
+            testId="orders-tab-item"
           >
             /settings/orders/o-5001/items/oi-1
           </ActiveLink>
