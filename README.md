@@ -11,6 +11,8 @@ Simple Vite + React + TypeScript app focused on routing architecture with Wouter
 - Global not-found route
 - Browser history navigation (back/forward demo)
 - Lazy loading of route modules and module CSS chunks
+- Enterprise-scale module with heavy dependencies and dynamic imports
+- Manual chunk splitting strategy in Vite
 - Mock API layer with realistic endpoints using MSW
 
 ## Tech stack
@@ -36,6 +38,31 @@ npm run build
 npm run lint
 ```
 
+## Bundle analysis
+
+```bash
+npm run analyze
+```
+
+This generates `dist/bundle-report.html` using Rollup Visualizer.
+
+## Jenkins pipeline
+
+This repo now includes a ready-to-use `Jenkinsfile` with stages:
+
+1. Install (`npm ci` + Playwright browser)
+2. Lint (`npm run lint`)
+3. Build + Analyze (`npm run analyze`)
+4. Bundle Budget Gate (`npm run budget:bundle`)
+5. E2E (`npm run test:e2e:ci`)
+
+Generated CI artifacts:
+
+- `dist/bundle-report.html`
+- `dist/bundle-budget-report.json`
+- `playwright-report/*`
+- `test-results/e2e-junit.xml`
+
 ## Project structure (important parts)
 
 - `src/App.tsx`: top-level lazy-loaded module mounts
@@ -45,8 +72,10 @@ npm run lint
 - `src/modules/settings/*`: settings module-owned routes
 - `src/modules/settings/orders/OrdersSubRouter.tsx`: deeply nested sub-routing
 - `src/modules/history/*`: history behavior demo route
+- `src/modules/enterprise/*`: enterprise module with analytics/integrations/contracts
 - `src/mocks/*`: MSW worker setup, handlers, and mock data
 - `src/shared/api/*`: typed API client and shared data types
+- `docs/frontend-optimization-guide.md`: architecture, diagrams, and optimization best practices
 
 ## Route examples
 
@@ -60,4 +89,9 @@ npm run lint
 - `/settings/orders/o-5001`
 - `/settings/orders/o-5001/items/oi-1`
 - `/history`
+- `/enterprise`
+- `/enterprise/dashboard`
+- `/enterprise/analytics`
+- `/enterprise/integrations`
+- `/enterprise/contracts`
 - `/does-not-exist` (global not-found)

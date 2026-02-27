@@ -22,12 +22,12 @@ test.describe("Wouter routing, active links, and module loading", () => {
     await expect(page.getByTestId("orders-tab-list")).not.toHaveClass(/is-active/);
   });
 
-  test("admin parent route redirects to dashboard and active tab is dashboard", async ({ page }) => {
+  test("admin parent route redirects to API and active tab is API", async ({ page }) => {
     await page.goto("/admin");
-    await page.waitForURL("**/admin/dashboard");
-    await expect(page.getByTestId("admin-dashboard-page")).toBeVisible();
+    await expect(page).toHaveURL(/\/admin\/api/);
+    await expect(page.getByTestId("admin-api-page")).toBeVisible();
     await expect(page.getByTestId("nav-admin")).toHaveClass(/is-active/);
-    await expect(page.getByTestId("admin-tab-dashboard")).toHaveClass(/is-active/);
+    await expect(page.getByTestId("admin-tab-api")).toHaveClass(/is-active/);
   });
 
   test("admin api and chatbot pages load with corresponding tab active", async ({ page }) => {
@@ -60,5 +60,23 @@ test.describe("Wouter routing, active links, and module loading", () => {
     await page.goto("/admin/dashboard/?view=grid#top");
     await expect(page.getByTestId("admin-dashboard-page")).toBeVisible();
     await expect(page.getByTestId("admin-tab-dashboard")).toHaveClass(/is-active/);
+  });
+
+  test("enterprise parent route redirects and dashboard tab is active", async ({ page }) => {
+    await page.goto("/enterprise");
+    await page.waitForURL("**/enterprise/dashboard");
+    await expect(page.getByTestId("enterprise-dashboard-page")).toBeVisible();
+    await expect(page.getByTestId("nav-enterprise")).toHaveClass(/is-active/);
+    await expect(page.getByTestId("enterprise-tab-dashboard")).toHaveClass(/is-active/);
+  });
+
+  test("enterprise analytics and integrations routes load specific components", async ({ page }) => {
+    await page.goto("/enterprise/analytics");
+    await expect(page.getByTestId("enterprise-analytics-page")).toBeVisible();
+    await expect(page.getByTestId("enterprise-tab-analytics")).toHaveClass(/is-active/);
+
+    await page.goto("/enterprise/integrations");
+    await expect(page.getByTestId("enterprise-integrations-page")).toBeVisible();
+    await expect(page.getByTestId("enterprise-tab-integrations")).toHaveClass(/is-active/);
   });
 });

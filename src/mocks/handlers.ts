@@ -1,5 +1,15 @@
 import { delay, http, HttpResponse } from "msw";
-import { categories, orders, paymentMethods, products, profile } from "./data";
+import {
+  categories,
+  chatbotTranscripts,
+  enterpriseKpi,
+  enterpriseRevenue,
+  integrationStatuses,
+  orders,
+  paymentMethods,
+  products,
+  profile,
+} from "./data";
 
 export const handlers = [
   http.get("/api/summary", async () => {
@@ -67,5 +77,25 @@ export const handlers = [
     }
 
     return HttpResponse.json(order);
+  }),
+
+  http.get("/api/enterprise/kpi", async () => {
+    await delay(220);
+    return HttpResponse.json(enterpriseKpi);
+  }),
+
+  http.get("/api/enterprise/revenue", async () => {
+    await delay(320);
+    return HttpResponse.json(enterpriseRevenue);
+  }),
+
+  http.get("/api/enterprise/integrations", async () => {
+    await delay(260);
+    return HttpResponse.json(integrationStatuses);
+  }),
+
+  http.get("/api/enterprise/chatbot/transcripts", async () => {
+    await delay(300);
+    return HttpResponse.json(chatbotTranscripts);
   }),
 ];

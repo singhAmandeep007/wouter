@@ -12,6 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Catalog", href: "/catalog" },
   { label: "Settings", href: "/settings" },
   { label: "Admin", href: "/admin" },
+  { label: "Enterprise", href: "/enterprise" },
   { label: "History Demo", href: "/history" },
 ];
 

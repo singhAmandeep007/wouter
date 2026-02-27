@@ -1,4 +1,15 @@
-import type { Category, DashboardSummary, Order, PaymentMethod, Product, UserProfile } from "./types";
+import type {
+  Category,
+  ChatbotTranscript,
+  DashboardSummary,
+  EnterpriseKpi,
+  IntegrationStatus,
+  Order,
+  PaymentMethod,
+  Product,
+  RevenuePoint,
+  UserProfile,
+} from "./types";
 
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(path);
@@ -19,4 +30,8 @@ export const api = {
   getProductById: (productId: string) => fetchJson<Product>(`/api/catalog/products/${productId}`),
   getOrders: () => fetchJson<Order[]>("/api/orders"),
   getOrderById: (orderId: string) => fetchJson<Order>(`/api/orders/${orderId}`),
+  getEnterpriseKpi: () => fetchJson<EnterpriseKpi>("/api/enterprise/kpi"),
+  getEnterpriseRevenue: () => fetchJson<RevenuePoint[]>("/api/enterprise/revenue"),
+  getEnterpriseIntegrations: () => fetchJson<IntegrationStatus[]>("/api/enterprise/integrations"),
+  getChatbotTranscripts: () => fetchJson<ChatbotTranscript[]>("/api/enterprise/chatbot/transcripts"),
 };

@@ -1,4 +1,14 @@
-import type { Category, Order, PaymentMethod, Product, UserProfile } from "../shared/api/types";
+import type {
+  Category,
+  ChatbotTranscript,
+  EnterpriseKpi,
+  IntegrationStatus,
+  Order,
+  PaymentMethod,
+  Product,
+  RevenuePoint,
+  UserProfile,
+} from "../shared/api/types";
 
 export const categories: Category[] = [
   { id: "phones", title: "Phones" },
@@ -93,4 +103,43 @@ export const orders: Order[] = [
       },
     ],
   },
+];
+
+export const enterpriseKpi: EnterpriseKpi = {
+  activeTenants: 148,
+  apiRequestsPerMinute: 18420,
+  slaPercent: 99.94,
+  unresolvedIncidents: 3,
+};
+
+export const enterpriseRevenue: RevenuePoint[] = [
+  { month: "2025-03", amount: 318000, region: "apac" },
+  { month: "2025-04", amount: 332000, region: "apac" },
+  { month: "2025-05", amount: 349000, region: "apac" },
+  { month: "2025-06", amount: 361000, region: "emea" },
+  { month: "2025-07", amount: 382000, region: "emea" },
+  { month: "2025-08", amount: 401000, region: "emea" },
+  { month: "2025-09", amount: 425000, region: "amer" },
+  { month: "2025-10", amount: 448000, region: "amer" },
+  { month: "2025-11", amount: 462000, region: "amer" },
+  { month: "2025-12", amount: 483000, region: "apac" },
+  { month: "2026-01", amount: 496000, region: "apac" },
+  { month: "2026-02", amount: 512000, region: "apac" },
+];
+
+export const integrationStatuses: IntegrationStatus[] = [
+  { id: "int-1", name: "Payments Gateway", owner: "FinOps", health: "healthy", latencyMs: 92 },
+  { id: "int-2", name: "CRM Sync", owner: "Growth", health: "degraded", latencyMs: 244 },
+  { id: "int-3", name: "Inventory Bus", owner: "Supply", health: "healthy", latencyMs: 135 },
+  { id: "int-4", name: "Tax Engine", owner: "Finance", health: "down", latencyMs: 0 },
+  { id: "int-5", name: "Fraud Detection", owner: "Risk", health: "healthy", latencyMs: 101 },
+];
+
+export const chatbotTranscripts: ChatbotTranscript[] = [
+  { id: "cb-1", tenant: "northwind", createdAt: "2026-02-25T11:30:00.000Z", tokens: 1532, channel: "web" },
+  { id: "cb-2", tenant: "globex", createdAt: "2026-02-25T12:10:00.000Z", tokens: 987, channel: "slack" },
+  { id: "cb-3", tenant: "initech", createdAt: "2026-02-25T14:42:00.000Z", tokens: 2210, channel: "teams" },
+  { id: "cb-4", tenant: "northwind", createdAt: "2026-02-26T09:12:00.000Z", tokens: 1144, channel: "web" },
+  { id: "cb-5", tenant: "umbrella", createdAt: "2026-02-26T16:58:00.000Z", tokens: 1750, channel: "slack" },
+  { id: "cb-6", tenant: "globex", createdAt: "2026-02-27T08:16:00.000Z", tokens: 1436, channel: "web" },
 ];

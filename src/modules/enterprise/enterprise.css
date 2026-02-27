@@ -1,0 +1,21 @@
+.enterprise-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+.enterprise-metric {
+  border: 1px solid #ddd;
+  padding: 0.55rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.enterprise-metric span {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.enterprise-metric strong {
+  font-size: 1.1rem;
+}

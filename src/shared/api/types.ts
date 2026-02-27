@@ -49,3 +49,32 @@ export type PaymentMethod = {
   label: string;
   isDefault: boolean;
 };
+
+export type EnterpriseKpi = {
+  activeTenants: number;
+  apiRequestsPerMinute: number;
+  slaPercent: number;
+  unresolvedIncidents: number;
+};
+
+export type RevenuePoint = {
+  month: string;
+  amount: number;
+  region: "apac" | "emea" | "amer";
+};
+
+export type IntegrationStatus = {
+  id: string;
+  name: string;
+  owner: string;
+  health: "healthy" | "degraded" | "down";
+  latencyMs: number;
+};
+
+export type ChatbotTranscript = {
+  id: string;
+  tenant: string;
+  createdAt: string;
+  tokens: number;
+  channel: "web" | "slack" | "teams";
+};
