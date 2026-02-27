@@ -50,15 +50,9 @@ pipeline {
 
   post {
     always {
-      script {
-        node('') {
-          dir("${env.WORKSPACE}") {
-            junit allowEmptyResults: true, testResults: 'test-results/e2e-junit.xml'
+      junit allowEmptyResults: true, testResults: 'test-results/e2e-junit.xml'
 
-            archiveArtifacts artifacts: 'dist/bundle-report.html,dist/bundle-budget-report.json,playwright-report/**,test-results/**', allowEmptyArchive: true
-          }
-        }
-      }
+      archiveArtifacts artifacts: 'dist/bundle-report.html,dist/bundle-budget-report.json,playwright-report/**,test-results/**', allowEmptyArchive: true
     }
   }
 }
