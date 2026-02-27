@@ -1,0 +1,8 @@
+.module-card ul {
+  padding-left: 1rem;
+}
+
+.module-card h3,
+.module-card h4 {
+  margin-top: 0.35rem;
+}

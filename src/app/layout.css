@@ -1,0 +1,95 @@
+.app-shell {
+  width: 100%;
+  height: 100%;
+}
+
+.navbar {
+  border-bottom: 1px solid #ddd;
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar h1 {
+  font-size: 1.1rem;
+}
+
+.subtitle {
+  margin-top: 0.2rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.history-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.content-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100% - 80px);
+}
+
+.sidebar {
+  border-right: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.sidebar h2 {
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}
+
+.sidebar ul {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 0.45rem;
+  border: 1px solid #ddd;
+  text-decoration: none;
+}
+
+.sidebar-link.is-active {
+  background: #efefef;
+  border-color: #999;
+}
+
+.main-content {
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.module-card {
+  border: 1px solid #ddd;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.module-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.module-links a {
+  display: inline-block;
+  border: 1px solid #ddd;
+  padding: 0.35rem 0.5rem;
+  text-decoration: none;
+}
