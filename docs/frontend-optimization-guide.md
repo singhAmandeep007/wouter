@@ -5,11 +5,15 @@ This project now includes enterprise-like complexity to demonstrate modern optim
 ## What was added to simulate a large business frontend
 
 - Heavy runtime libraries: `chart.js`, `lodash-es`, `date-fns`, `zod`, `axios`
+- Added `@xyflow/react` (React Flow) used in two different feature areas
 - New enterprise module with nested routes and default redirect:
   - `/enterprise` → `/enterprise/dashboard`
   - `/enterprise/analytics` (chart rendering via dynamic import)
   - `/enterprise/integrations` (dynamic `axios` loading)
   - `/enterprise/contracts` (runtime schema validation using `zod`)
+  - `/enterprise/workflow` (React Flow graph)
+- New settings live-order flow route:
+  - `/settings/orders/live` (React Flow graph)
 - Additional mock APIs and larger data shapes in MSW
 - Vite manual chunking strategy and optional bundle visualizer
 
@@ -33,8 +37,10 @@ This avoids paying for heavy dependencies globally.
 `vite.config.ts` groups dependencies by concern:
 
 - `vendor-core` (React + Wouter)
+- `vendor-flow` (`@xyflow/react` ecosystem and graph libs)
 - `vendor-analytics` (chart/date/lodash/zod/axios)
-- module-focused chunks (for enterprise/settings)
+
+Route modules are **not** manually grouped into one mega module chunk now. They are emitted as independent route chunks by default splitting, which keeps route boundaries cleaner.
 
 This improves long-term browser caching and reduces invalidation blast radius.
 
@@ -69,18 +75,46 @@ sequenceDiagram
 graph TD
   A[index.html] --> B[entry chunk]
   B --> C[vendor-core]
-  B --> D[module-dashboard]
-  B --> E[module-catalog]
-  B --> F[module-settings]
-  B --> G[module-admin]
-  B --> H[module-enterprise]
+  B --> D[dashboard route chunk]
+  B --> E[catalog route chunk]
+  B --> F[settings route chunk]
+  B --> G[admin route chunk]
+  B --> H[enterprise route chunk]
 
-  H --> I[vendor-analytics]
-  H --> J[enterprise.css]
-  E --> K[catalog.css]
-  F --> L[settings.css]
-  D --> M[dashboard.css]
+  F --> I[orders sub-router chunk]
+  F --> J[vendor-flow]
+  H --> J[vendor-flow]
+  H --> K[vendor-analytics]
+  J --> L[vendor-flow.css]
 ```
+
+## Why this chunk pattern (current logic)
+
+1. Keep framework runtime stable in `vendor-core` for high cache reuse.
+2. Keep graph/flow stack in `vendor-flow` because it is heavy and used by multiple but not all modules.
+3. Keep analytics/data-heavy libs in `vendor-analytics` because they are mostly enterprise-oriented.
+4. Let route modules split naturally, instead of forcing all module code into a single manual chunk.
+
+## Browser behavior for shared vendor chunks
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant B as Browser
+  participant S as Preview Server
+
+  U->>B: Open /settings/orders/live
+  B->>S: Request settings route chunk
+  B->>S: Request vendor-flow chunk
+  S-->>B: 200 settings + 200 vendor-flow
+
+  U->>B: Navigate to /enterprise/workflow
+  B->>S: Request enterprise route chunk
+  B->>S: vendor-flow already cached
+  S-->>B: 200 enterprise only
+```
+
+Result: the shared vendor chunk is downloaded once per version/hash and reused across routes.
 
 ## Example: why this matters in large apps
 

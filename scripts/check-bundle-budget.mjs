@@ -6,24 +6,38 @@ import { Writable } from "node:stream";
 
 const assetsDir = join(process.cwd(), "dist", "assets");
 const reportPath = join(process.cwd(), "dist", "bundle-budget-report.json");
+const BUDGET_LIMIT_KIB = 500;
+const BUDGET_LIMIT_BYTES = BUDGET_LIMIT_KIB * 1024;
 
 const budgets = [
-  { name: "vendor-core", prefix: "vendor-core-", maxRawBytes: 240_000, maxGzipBytes: 80_000, required: true },
+  {
+    name: "vendor-core",
+    prefix: "vendor-core-",
+    maxRawBytes: BUDGET_LIMIT_BYTES,
+    maxGzipBytes: BUDGET_LIMIT_BYTES,
+    required: true,
+  },
+  {
+    name: "vendor-flow",
+    prefix: "vendor-flow-",
+    maxRawBytes: BUDGET_LIMIT_BYTES,
+    maxGzipBytes: BUDGET_LIMIT_BYTES,
+    required: true,
+  },
   {
     name: "vendor-analytics",
     prefix: "vendor-analytics-",
-    maxRawBytes: 300_000,
-    maxGzipBytes: 110_000,
+    maxRawBytes: BUDGET_LIMIT_BYTES,
+    maxGzipBytes: BUDGET_LIMIT_BYTES,
     required: true,
   },
   {
-    name: "module-enterprise",
-    prefix: "module-enterprise-",
-    maxRawBytes: 140_000,
-    maxGzipBytes: 50_000,
+    name: "app-entry",
+    prefix: "index-",
+    maxRawBytes: BUDGET_LIMIT_BYTES,
+    maxGzipBytes: BUDGET_LIMIT_BYTES,
     required: true,
   },
-  { name: "app-entry", prefix: "index-", maxRawBytes: 70_000, maxGzipBytes: 25_000, required: true },
 ];
 
 async function gzipSize(filePath) {

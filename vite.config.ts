@@ -22,8 +22,17 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // matches paths containing node_modules/react or node_modules/wouter
           if (id.includes("node_modules/react") || id.includes("node_modules/wouter")) {
             return "vendor-core";
+          }
+
+          if (
+            id.includes("node_modules/@xyflow/") ||
+            id.includes("node_modules/reactflow") ||
+            id.includes("node_modules/d3-")
+          ) {
+            return "vendor-flow";
           }
 
           if (
@@ -34,14 +43,6 @@ export default defineConfig({
             id.includes("node_modules/axios")
           ) {
             return "vendor-analytics";
-          }
-
-          if (id.includes("src/modules/enterprise")) {
-            return "module-enterprise";
-          }
-
-          if (id.includes("src/modules/settings")) {
-            return "module-settings";
           }
         },
       },

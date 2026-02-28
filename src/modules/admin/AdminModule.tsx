@@ -1,8 +1,12 @@
 import { useEffect } from "react";
 import { Route, Switch, useLocation } from "wouter";
+// NOTE: This one line will load entire vendor-analytics chunk as date-fns is part of that chunk. In a real app, we would likely want to split this further so that date-fns is in its own chunk and only loaded by the modules that need it.
+// import { format } from "date-fns";
 import { ActiveLink } from "../../shared/routing/ActiveLink";
 
 function AdminDashboardPage() {
+  // const date = format(new Date(), "MMMM do, yyyy H:mm:ss");
+  // console.log("Admin dashboard rendered at", date);
   return (
     <section
       className="module-card"

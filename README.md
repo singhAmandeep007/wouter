@@ -22,6 +22,16 @@ Simple Vite + React + TypeScript app focused on routing architecture with Wouter
 - Wouter
 - MSW (Mock Service Worker)
 
+## Full documentation
+
+- [docs/README.md](docs/README.md) - complete documentation index
+- [docs/optimization-foundations/README.md](docs/optimization-foundations/README.md) - fundamentals-first optimization learning path
+- [docs/optimization-foundations/03-splitting-and-chunking-strategies.md](docs/optimization-foundations/03-splitting-and-chunking-strategies.md) - current chunk pattern, logic, and trade-offs
+- [docs/routing-and-architecture.md](docs/routing-and-architecture.md) - module routing, lazy loading, and active-link behavior
+- [docs/ci-jenkins-runbook.md](docs/ci-jenkins-runbook.md) - Jenkins setup, Node parity, and troubleshooting
+- [docs/implementation-differences.md](docs/implementation-differences.md) - baseline vs final delivery summary
+- [docs/frontend-optimization-guide.md](docs/frontend-optimization-guide.md) - optimization concepts and bundle strategy
+
 ## Run
 
 ```bash
@@ -37,6 +47,15 @@ Open the dev URL shown in terminal (typically `http://localhost:5173`).
 npm run build
 npm run lint
 ```
+
+## Preview with MSW mocks
+
+```bash
+npm run build:mock
+npm run preview:mock
+```
+
+This builds with `VITE_ENABLE_MSW=true` and serves the production build through `vite preview` while keeping mock APIs active.
 
 ## Bundle analysis
 
@@ -72,7 +91,7 @@ Generated CI artifacts:
 - `src/modules/settings/*`: settings module-owned routes
 - `src/modules/settings/orders/OrdersSubRouter.tsx`: deeply nested sub-routing
 - `src/modules/history/*`: history behavior demo route
-- `src/modules/enterprise/*`: enterprise module with analytics/integrations/contracts
+- `src/modules/enterprise/*`: enterprise module with analytics/integrations/contracts/workflow
 - `src/mocks/*`: MSW worker setup, handlers, and mock data
 - `src/shared/api/*`: typed API client and shared data types
 - `docs/frontend-optimization-guide.md`: architecture, diagrams, and optimization best practices
@@ -88,10 +107,12 @@ Generated CI artifacts:
 - `/settings/orders`
 - `/settings/orders/o-5001`
 - `/settings/orders/o-5001/items/oi-1`
+- `/settings/orders/live`
 - `/history`
 - `/enterprise`
 - `/enterprise/dashboard`
 - `/enterprise/analytics`
 - `/enterprise/integrations`
 - `/enterprise/contracts`
+- `/enterprise/workflow`
 - `/does-not-exist` (global not-found)
