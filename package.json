@@ -10,15 +10,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:mock": "VITE_ENABLE_MSW=true npm run build",
     "analyze": "ANALYZE=true npm run build",
     "budget:bundle": "node scripts/check-bundle-budget.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
+    "preview:mock": "npm run build:mock && vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ci": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
+    "@xyflow/react": "^12.10.1",
     "axios": "^1.13.6",
     "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",

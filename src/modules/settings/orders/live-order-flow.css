@@ -1,0 +1,7 @@
+.live-order-flow {
+  height: 280px;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}

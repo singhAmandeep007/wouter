@@ -1,12 +1,31 @@
 import { format } from "date-fns";
 import { groupBy, orderBy, sumBy } from "lodash-es";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
 import { Route, Switch, useLocation } from "wouter";
 import { z } from "zod";
 import { api } from "../../shared/api/client";
 import { ActiveLink } from "../../shared/routing/ActiveLink";
 import type { ChatbotTranscript, EnterpriseKpi, IntegrationStatus, RevenuePoint } from "../../shared/api/types";
+import "@xyflow/react/dist/style.css";
 import "./enterprise.css";
+import "./enterprise-flow.css";
+
+const enterpriseFlowNodes = [
+  { id: "e1", position: { x: 20, y: 80 }, data: { label: "Gateway" }, type: "input" },
+  { id: "e2", position: { x: 220, y: 20 }, data: { label: "Tenant API" } },
+  { id: "e3", position: { x: 220, y: 140 }, data: { label: "Chatbot API" } },
+  { id: "e4", position: { x: 460, y: 80 }, data: { label: "Analytics Pipeline" } },
+  { id: "e5", position: { x: 680, y: 80 }, data: { label: "Ops Dashboard" }, type: "output" },
+];
+
+const enterpriseFlowEdges = [
+  { id: "ee1-2", source: "e1", target: "e2", animated: true },
+  { id: "ee1-3", source: "e1", target: "e3", animated: true },
+  { id: "ee2-4", source: "e2", target: "e4", animated: true },
+  { id: "ee3-4", source: "e3", target: "e4", animated: true },
+  { id: "ee4-5", source: "e4", target: "e5", animated: true },
+];
 
 const kpiSchema = z.object({
   activeTenants: z.number().int().nonnegative(),
@@ -146,7 +165,7 @@ function EnterpriseIntegrationsPage() {
 
   const transcriptsByChannel = useMemo<Record<string, ChatbotTranscript[]>>(
     () => groupBy(transcripts, (item: ChatbotTranscript) => item.channel),
-    [transcripts],
+    [transcripts]
   );
 
   return (
@@ -199,6 +218,29 @@ function EnterpriseContractsPage() {
       <h3>Enterprise API Contracts</h3>
       <p>Status: {status}</p>
       {validatedAt ? <p>Validated at: {validatedAt}</p> : null}
+    </section>
+  );
+}
+
+function EnterpriseWorkflowPage() {
+  return (
+    <section
+      className="module-card"
+      data-testid="enterprise-workflow-page"
+    >
+      <h3>Enterprise System Workflow</h3>
+      <p>Topology view of enterprise request flow and analytics processing.</p>
+      <div className="flow-surface enterprise-flow">
+        <ReactFlow
+          fitView
+          nodes={enterpriseFlowNodes}
+          edges={enterpriseFlowEdges}
+        >
+          <MiniMap />
+          <Controls />
+          <Background gap={16} />
+        </ReactFlow>
+      </div>
     </section>
   );
 }
@@ -266,6 +308,15 @@ function EnterpriseModule() {
             Contracts
           </ActiveLink>
         </li>
+        <li>
+          <ActiveLink
+            exact
+            href="/enterprise/workflow"
+            testId="enterprise-tab-workflow"
+          >
+            Workflow
+          </ActiveLink>
+        </li>
       </ul>
 
       <Switch>
@@ -283,6 +334,9 @@ function EnterpriseModule() {
         </Route>
         <Route path="/enterprise/contracts">
           <EnterpriseContractsPage />
+        </Route>
+        <Route path="/enterprise/workflow">
+          <EnterpriseWorkflowPage />
         </Route>
         <Route>
           <EnterpriseNotFound />

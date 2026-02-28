@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
+import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
 import { Link, Route, Switch } from "wouter";
 import { api } from "../../../shared/api/client";
 import { ActiveLink } from "../../../shared/routing/ActiveLink";
 import type { Order } from "../../../shared/api/types";
+import "@xyflow/react/dist/style.css";
+import "./live-order-flow.css";
+
+const liveOrderNodes = [
+  { id: "n1", position: { x: 10, y: 70 }, data: { label: "Order Received" }, type: "input" },
+  { id: "n2", position: { x: 220, y: 70 }, data: { label: "Payment Confirmed" } },
+  { id: "n3", position: { x: 440, y: 70 }, data: { label: "Packed" } },
+  { id: "n4", position: { x: 640, y: 70 }, data: { label: "Shipped" }, type: "output" },
+];
+
+const liveOrderEdges = [
+  { id: "e1-2", source: "n1", target: "n2", animated: true },
+  { id: "e2-3", source: "n2", target: "n3", animated: true },
+  { id: "e3-4", source: "n3", target: "n4", animated: true },
+];
 
 function OrdersDefault() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -108,6 +124,29 @@ function OrdersNotFound() {
   );
 }
 
+function LiveOrderFlowPage() {
+  return (
+    <section
+      className="module-card"
+      data-testid="orders-live-page"
+    >
+      <h3>Live Order Pipeline</h3>
+      <p>Real-time order movement from intake to shipping.</p>
+      <div className="flow-surface live-order-flow">
+        <ReactFlow
+          fitView
+          nodes={liveOrderNodes}
+          edges={liveOrderEdges}
+        >
+          <MiniMap />
+          <Controls />
+          <Background gap={16} />
+        </ReactFlow>
+      </div>
+    </section>
+  );
+}
+
 function OrdersSubRouter() {
   return (
     <section data-testid="orders-sub-router">
@@ -140,11 +179,23 @@ function OrdersSubRouter() {
             /settings/orders/o-5001/items/oi-1
           </ActiveLink>
         </li>
+        <li>
+          <ActiveLink
+            exact
+            href="/settings/orders/live"
+            testId="orders-tab-live"
+          >
+            /settings/orders/live
+          </ActiveLink>
+        </li>
       </ul>
 
       <Switch>
         <Route path="/settings/orders">
           <OrdersDefault />
+        </Route>
+        <Route path="/settings/orders/live">
+          <LiveOrderFlowPage />
         </Route>
         <Route path="/settings/orders/:orderId/items/:itemId">
           {(params) => (
