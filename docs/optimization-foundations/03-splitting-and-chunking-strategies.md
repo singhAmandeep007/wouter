@@ -2,6 +2,15 @@
 
 Large apps need a predictable strategy, not ad-hoc imports.
 
+> **Update — chart.js lazy-load fix.** `manualChunks` originally grouped `chart.js` into
+> `vendor-analytics`, which a lazily-loaded module also imported statically — collapsing the
+> deliberate `import("chart.js/auto")` back into an eager load. chart.js is now left out of
+> `manualChunks` so it gets its own async chunk (loaded only when the analytics tab mounts):
+> `vendor-analytics` dropped ~285 KB → ~82 KB, and ~200 KB of chart.js now loads on demand.
+> A guard in `scripts/check-bundle-budget.mjs` fails CI if chart.js leaks back into an eager
+> chunk. **Lesson:** `manualChunks` is a *placement* directive; assigning a lib to a chunk an
+> eager module already imports makes it eager, regardless of `import()` in your source.
+
 ## Strategy layers
 
 ```mermaid

@@ -5,25 +5,28 @@ Simple Vite + React + TypeScript app focused on routing architecture with Wouter
 ## What this demo covers
 
 - App shell with navbar, sidebar, and main content
-- Modular route ownership (routes are defined inside each module)
-- Nested and deeply nested routes
-- Default routes and module-level not-found routes
-- Global not-found route
-- Browser history navigation (back/forward demo)
-- Lazy loading of route modules and module CSS chunks
-- Enterprise-scale module with heavy dependencies and dynamic imports
-- Manual chunk splitting strategy in Vite
-- Mock API layer with realistic endpoints using MSW
+- Modular route ownership, nested/deep routes, default + not-found routes, declarative redirects
+- Lazy loading of route modules and module CSS chunks; manual chunk splitting (chart.js lazy)
+- **OpenAPI-first data layer**: `openapi.yaml` → generated types **and** zod validators →
+  typed client → per-resource services/queries/hooks on TanStack Query
+- **Runtime response validation** at every boundary; one normalized `ApiError`
+- **Global notifications** (toasts) driven by the query/mutation caches
+- **Error boundaries** (route + root) with chunk-load recovery
+- **Shared UI components + CSS Modules** (no global shared classes)
+- **Relational mock backend** with `@mswjs/data` + runtime fault injection for tests
+- **Full test pyramid**: Vitest (unit/component) + Playwright (e2e), incl. error/empty paths
 
 ## Tech stack
 
-- Vite
-- React + TypeScript
-- Wouter
-- MSW (Mock Service Worker)
+- Vite + React + TypeScript
+- Wouter (routing)
+- TanStack Query + openapi-fetch + zod (data layer)
+- MSW + @mswjs/data (mock backend)
+- Vitest + Testing Library + Playwright (tests)
 
 ## Full documentation
 
+- [docs/architecture/README.md](docs/architecture/README.md) - **architecture deep-dives with mermaid diagrams**
 - [docs/README.md](docs/README.md) - complete documentation index
 - [docs/optimization-foundations/README.md](docs/optimization-foundations/README.md) - fundamentals-first optimization learning path
 - [docs/optimization-foundations/03-splitting-and-chunking-strategies.md](docs/optimization-foundations/03-splitting-and-chunking-strategies.md) - current chunk pattern, logic, and trade-offs

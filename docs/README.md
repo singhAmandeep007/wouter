@@ -4,6 +4,13 @@ This folder documents the full implementation completed in this workspace: modul
 
 ## Documentation map
 
+- [Architecture (index)](architecture/README.md) — data layer, error handling, mock backend,
+  testing, UI/styling — with mermaid diagrams. **Start here** to understand how the app works.
+  - [Data Layer](architecture/data-layer.md)
+  - [Error Handling & Notifications](architecture/error-handling.md)
+  - [Mock Backend (@mswjs/data + faults)](architecture/mock-backend.md)
+  - [Testing Strategy](architecture/testing-strategy.md)
+  - [UI & Styling](architecture/ui-and-styling.md)
 - [Routing and Architecture](routing-and-architecture.md)
 - [CI/Jenkins Runbook](ci-jenkins-runbook.md)
 - [Implementation Differences](implementation-differences.md)
@@ -15,7 +22,10 @@ This folder documents the full implementation completed in this workspace: modul
 - App entry and route mounting: `src/App.tsx`
 - App shell and navigation: `src/app/AppLayout.tsx`
 - Active route matching helper: `src/shared/routing/ActiveLink.tsx`
-- Mock APIs: `src/mocks/handlers.ts`, `src/mocks/data.ts`
+- API contract (single source of truth): `src/shared/api/openapi.yaml` (`npm run codegen`)
+- Data layer: `src/resources/*`, `src/shared/api/*`, `src/shared/query/*`
+- Shared UI components: `src/shared/ui/*`
+- Mock backend: `src/mocks/db.ts`, `src/mocks/seed.ts`, `src/mocks/handlers.ts`, `src/mocks/faults.ts`
 - Pipeline: `Jenkinsfile`
 
 ## System overview
