@@ -42,6 +42,15 @@ describe("useOrders / useOrder", () => {
     expect(result.current.fetchStatus).toBe("idle");
   });
 
+  it("errors and emits a toast when the orders list request fails", async () => {
+    server.use(http.get("/api/orders", () => HttpResponse.json({ message: "boom" }, { status: 500 })));
+    const { wrapper } = createQueryWrapper();
+    const { result } = renderHook(() => useOrders(), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    await waitFor(() => expect(notificationStore.getSnapshot().some((n) => n.kind === "error")).toBe(true));
+  });
+
   it("emits the configured error toast on failure", async () => {
     server.use(http.get("/api/orders/:orderId", () => HttpResponse.json({ message: "x" }, { status: 500 })));
     const { wrapper } = createQueryWrapper();

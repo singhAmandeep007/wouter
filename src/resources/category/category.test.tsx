@@ -1,8 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
 import { renderHook, waitFor } from "@testing-library/react";
+import { notificationStore } from "@/shared/notifications";
 import { createQueryWrapper } from "@/test/test-utils";
+import { server } from "@/test/server";
 import { categoryService } from "./category.service";
 import { useCategories } from "./category.hooks";
+
+afterEach(() => notificationStore.clear());
 
 describe("category resource", () => {
   it("service lists categories", async () => {
@@ -16,5 +21,14 @@ describe("category resource", () => {
     const { result } = renderHook(() => useCategories(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.length).toBeGreaterThan(0);
+  });
+
+  it("hook errors and emits a toast when the list request fails", async () => {
+    server.use(http.get("/api/catalog/categories", () => HttpResponse.json({ message: "boom" }, { status: 500 })));
+    const { wrapper } = createQueryWrapper();
+    const { result } = renderHook(() => useCategories(), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    await waitFor(() => expect(notificationStore.getSnapshot().some((n) => n.kind === "error")).toBe(true));
   });
 });
