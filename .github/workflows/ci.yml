@@ -1,0 +1,70 @@
+name: CI
+
+# Runs on every push to main and on every pull request ("MR"), uploading artifacts.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit + component tests (with coverage)
+        run: npm run test:cov
+
+      # `analyze` = build + rollup visualizer report; then check the size budget + chart split.
+      - name: Build, bundle analysis & budget
+        run: |
+          npm run analyze
+          npm run budget:bundle
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: npm run test:e2e
+
+      # Artifacts (uploaded even on failure, for debugging the run).
+      - name: Upload coverage report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
+
+      - name: Upload Playwright report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+
+      - name: Upload bundle reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-reports
+          path: |
+            dist/bundle-report.html
+            dist/bundle-budget-report.json
+          if-no-files-found: ignore

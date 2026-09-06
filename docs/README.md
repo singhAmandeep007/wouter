@@ -11,6 +11,7 @@ This folder documents the full implementation completed in this workspace: modul
   - [Mock Backend (@mswjs/data + faults)](architecture/mock-backend.md)
   - [Testing Strategy](architecture/testing-strategy.md)
   - [UI & Styling](architecture/ui-and-styling.md)
+  - [Deployment & CI](architecture/deployment-and-ci.md) — GitHub Pages + Actions, base-path gotchas
 - [Routing and Architecture](routing-and-architecture.md)
 - [CI/Jenkins Runbook](ci-jenkins-runbook.md)
 - [Implementation Differences](implementation-differences.md)

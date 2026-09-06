@@ -5,6 +5,11 @@ import { isEmpty, withFaults } from "./faults";
 // One delay for every endpoint (DRY) — enough to exercise loading states without slowing tests.
 const LATENCY_MS = 150;
 
+// Prefix every route with the app's public base path so handlers match the client's requests
+// under a subpath deploy (GitHub Pages → "/wouter/api/..."). Empty in dev/tests → "/api/...".
+const basePrefix = import.meta.env.BASE_URL.replace(/\/+$/, "");
+const withBase = (path: string) => `${basePrefix}${path}`;
+
 /**
  * Request handlers. Each maps a custom `/api/...` path to a query against the mock DB and is
  * wrapped in `withFaults(operationId, …)` so any endpoint can be flipped to error/empty/network
@@ -14,7 +19,7 @@ const LATENCY_MS = 150;
  */
 export const handlers = [
   http.get(
-    "/api/summary",
+    withBase("/api/summary"),
     withFaults("getDashboardSummary", async () => {
       await delay(LATENCY_MS);
       const orders = db.order.getAll();
@@ -28,7 +33,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/settings/profile",
+    withBase("/api/settings/profile"),
     withFaults("getUserProfile", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(db.profile.findFirst({ where: { id: { equals: PROFILE_ID } } }));
@@ -36,7 +41,7 @@ export const handlers = [
   ),
 
   http.put(
-    "/api/settings/profile",
+    withBase("/api/settings/profile"),
     withFaults("updateUserProfile", async ({ request }) => {
       await delay(LATENCY_MS);
       const updates = (await request.json()) as Record<string, unknown>;
@@ -49,7 +54,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/settings/payment-methods",
+    withBase("/api/settings/payment-methods"),
     withFaults("listPaymentMethods", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(isEmpty("listPaymentMethods") ? [] : db.paymentMethod.getAll());
@@ -57,7 +62,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/catalog/categories",
+    withBase("/api/catalog/categories"),
     withFaults("listCategories", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(isEmpty("listCategories") ? [] : db.category.getAll());
@@ -65,7 +70,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/catalog/products",
+    withBase("/api/catalog/products"),
     withFaults("listProducts", async ({ request }) => {
       await delay(LATENCY_MS);
       if (isEmpty("listProducts")) {
@@ -80,7 +85,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/catalog/products/:productId",
+    withBase("/api/catalog/products/:productId"),
     withFaults("getProductById", async ({ params }) => {
       await delay(LATENCY_MS);
       const product = db.product.findFirst({ where: { id: { equals: String(params.productId) } } });
@@ -92,7 +97,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/orders",
+    withBase("/api/orders"),
     withFaults("listOrders", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(isEmpty("listOrders") ? [] : db.order.getAll());
@@ -100,7 +105,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/orders/:orderId",
+    withBase("/api/orders/:orderId"),
     withFaults("getOrderById", async ({ params }) => {
       await delay(LATENCY_MS);
       const order = db.order.findFirst({ where: { id: { equals: String(params.orderId) } } });
@@ -112,7 +117,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/enterprise/kpi",
+    withBase("/api/enterprise/kpi"),
     withFaults("getEnterpriseKpi", async () => {
       await delay(LATENCY_MS);
       const record = db.enterpriseKpi.findFirst({ where: { id: { equals: KPI_ID } } });
@@ -131,7 +136,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/enterprise/revenue",
+    withBase("/api/enterprise/revenue"),
     withFaults("getEnterpriseRevenue", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(isEmpty("getEnterpriseRevenue") ? [] : db.revenuePoint.getAll());
@@ -139,7 +144,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/enterprise/integrations",
+    withBase("/api/enterprise/integrations"),
     withFaults("getEnterpriseIntegrations", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(isEmpty("getEnterpriseIntegrations") ? [] : db.integrationStatus.getAll());
@@ -147,7 +152,7 @@ export const handlers = [
   ),
 
   http.get(
-    "/api/enterprise/chatbot/transcripts",
+    withBase("/api/enterprise/chatbot/transcripts"),
     withFaults("getChatbotTranscripts", async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json(isEmpty("getChatbotTranscripts") ? [] : db.chatbotTranscript.getAll());

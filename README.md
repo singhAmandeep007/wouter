@@ -2,6 +2,12 @@
 
 Simple Vite + React + TypeScript app focused on routing architecture with Wouter.
 
+**Live demo:** https://singhamandeep007.github.io/wouter/ (deployed via GitHub Actions; the
+demo runs its MSW mock backend in production, so it's fully functional with no server).
+
+[![CI](https://github.com/singhAmandeep007/wouter/actions/workflows/ci.yml/badge.svg)](https://github.com/singhAmandeep007/wouter/actions/workflows/ci.yml)
+[![Deploy](https://github.com/singhAmandeep007/wouter/actions/workflows/deploy.yml/badge.svg)](https://github.com/singhAmandeep007/wouter/actions/workflows/deploy.yml)
+
 ## What this demo covers
 
 - App shell with navbar, sidebar, and main content

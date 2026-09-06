@@ -5,6 +5,11 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Public base path. Defaults to "/" for local dev; the GitHub Pages deploy sets
+  // VITE_BASE="/wouter/" so assets resolve under the repo subpath. Everything else that
+  // needs the base (API client, MSW worker + handlers, wouter router) reads it back at
+  // runtime via import.meta.env.BASE_URL.
+  base: process.env.VITE_BASE || "/",
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

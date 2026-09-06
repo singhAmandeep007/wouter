@@ -2,11 +2,15 @@ import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "@/shared/api/generated/schema";
 
 /**
- * Base URL is the primary deployment knob. Empty string keeps requests same-origin,
- * which is what MSW intercepts in dev / mock builds. Point it at a real gateway in
- * other environments via `VITE_API_BASE_URL` without touching any service code.
+ * Base URL is the primary deployment knob.
+ * - Tests set `VITE_API_BASE_URL` explicitly (jsdom origin), which wins.
+ * - Otherwise it derives from the app's public base path (`import.meta.env.BASE_URL`):
+ *   "" for local dev (same-origin), and "/wouter" on GitHub Pages. Requests therefore stay
+ *   UNDER the base path — which matters because the MSW service worker on Pages is scoped
+ *   to that subpath and would not intercept root "/api/..." calls.
+ * Point it at a real gateway via `VITE_API_BASE_URL` without touching any service code.
  */
-const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
+const baseUrl = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.BASE_URL.replace(/\/+$/, "");
 
 /**
  * Extension point for auth. Wire this to your real token store (memory, cookie-backed
