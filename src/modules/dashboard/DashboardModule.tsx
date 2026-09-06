@@ -1,23 +1,27 @@
 import { Link } from "wouter";
 import { useDashboardSummary } from "@/resources/dashboard";
-import "./dashboard.css";
+import { Card, PageMessage } from "@/shared/ui";
 
 function DashboardModule() {
   const { data: summary, error, isPending } = useDashboardSummary();
 
   if (error) {
-    return <p>Failed to load dashboard: {error.message}</p>;
+    return (
+      <PageMessage
+        tone="error"
+        testId="dashboard-error"
+      >
+        Failed to load dashboard: {error.message}
+      </PageMessage>
+    );
   }
 
   if (isPending) {
-    return <p>Loading dashboard...</p>;
+    return <PageMessage testId="dashboard-loading">Loading dashboard...</PageMessage>;
   }
 
   return (
-    <section
-      className="module-card"
-      data-testid="dashboard-module"
-    >
+    <Card testId="dashboard-module">
       <h2>Dashboard</h2>
       <p>Welcome back, {summary.profile.name}</p>
       <p>Open orders: {summary.openOrders}</p>
@@ -30,7 +34,7 @@ function DashboardModule() {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 

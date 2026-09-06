@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { isChunkLoadError } from "./isChunkLoadError";
-import "./errorBoundary.css";
+import styles from "./errorBoundary.module.css";
 
 export type ErrorFallbackProps = {
   error: Error;
@@ -72,12 +72,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 export function DefaultErrorFallback({ error, reset, isChunkLoadError: chunkError }: ErrorFallbackProps) {
   return (
     <div
-      className="error-boundary"
+      className={styles.errorBoundary}
       role="alert"
       data-testid="error-boundary-fallback"
     >
       <h2>Something went wrong</h2>
-      <p className="error-boundary__message">{error.message}</p>
+      <p className={styles.message}>{error.message}</p>
       {chunkError ? (
         <button
           type="button"

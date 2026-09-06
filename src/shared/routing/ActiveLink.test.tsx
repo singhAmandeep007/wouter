@@ -18,6 +18,14 @@ describe("ActiveLink", () => {
     expect(screen.getByTestId("link")).not.toHaveClass("is-active");
   });
 
+  it("sets aria-current=page only when active (stable, style-independent signal)", () => {
+    renderAt("/settings", { href: "/settings", exact: true, testId: "active", children: "Settings" });
+    expect(screen.getByTestId("active")).toHaveAttribute("aria-current", "page");
+
+    renderAt("/other", { href: "/settings", exact: true, testId: "inactive", children: "Settings" });
+    expect(screen.getByTestId("inactive")).not.toHaveAttribute("aria-current");
+  });
+
   it("highlights a parent link on a child route in non-exact (prefix) mode", () => {
     renderAt("/settings/orders/o-1", { href: "/settings/orders", testId: "link", children: "Orders" });
     expect(screen.getByTestId("link")).toHaveClass("is-active");

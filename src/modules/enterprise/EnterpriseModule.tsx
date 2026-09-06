@@ -10,10 +10,8 @@ import {
   useEnterpriseTranscripts,
 } from "@/resources/enterprise";
 import type { ChatbotTranscript, IntegrationStatus, RevenuePoint } from "@/resources/enterprise";
-import { ActiveLink } from "../../shared/routing/ActiveLink";
+import { Card, FlowSurface, MetricGrid, MetricTile, ModuleNav, PageMessage } from "@/shared/ui";
 import "@xyflow/react/dist/style.css";
-import "./enterprise.css";
-import "./enterprise-flow.css";
 
 const enterpriseFlowNodes = [
   { id: "e1", position: { x: 20, y: 80 }, data: { label: "Gateway" }, type: "input" },
@@ -37,34 +35,31 @@ function EnterpriseDashboardPage() {
   const { data: kpi } = useEnterpriseKpi();
 
   if (!kpi) {
-    return <p data-testid="enterprise-dashboard-loading">Loading enterprise dashboard...</p>;
+    return <PageMessage testId="enterprise-dashboard-loading">Loading enterprise dashboard...</PageMessage>;
   }
 
   return (
-    <section
-      className="module-card"
-      data-testid="enterprise-dashboard-page"
-    >
+    <Card testId="enterprise-dashboard-page">
       <h3>Enterprise Dashboard</h3>
-      <div className="enterprise-grid">
-        <div className="enterprise-metric">
-          <span>Active Tenants</span>
-          <strong>{kpi.activeTenants}</strong>
-        </div>
-        <div className="enterprise-metric">
-          <span>API RPM</span>
-          <strong>{kpi.apiRequestsPerMinute.toLocaleString()}</strong>
-        </div>
-        <div className="enterprise-metric">
-          <span>SLA</span>
-          <strong>{kpi.slaPercent}%</strong>
-        </div>
-        <div className="enterprise-metric">
-          <span>Open Incidents</span>
-          <strong>{kpi.unresolvedIncidents}</strong>
-        </div>
-      </div>
-    </section>
+      <MetricGrid>
+        <MetricTile
+          label="Active Tenants"
+          value={kpi.activeTenants}
+        />
+        <MetricTile
+          label="API RPM"
+          value={kpi.apiRequestsPerMinute.toLocaleString()}
+        />
+        <MetricTile
+          label="SLA"
+          value={`${kpi.slaPercent}%`}
+        />
+        <MetricTile
+          label="Open Incidents"
+          value={kpi.unresolvedIncidents}
+        />
+      </MetricGrid>
+    </Card>
   );
 }
 
@@ -115,10 +110,7 @@ function EnterpriseAnalyticsPage() {
   const totalRevenue = useMemo(() => sumBy(revenue, (entry: RevenuePoint) => entry.amount), [revenue]);
 
   return (
-    <section
-      className="module-card"
-      data-testid="enterprise-analytics-page"
-    >
+    <Card testId="enterprise-analytics-page">
       <h3>Enterprise Analytics</h3>
       <p>Total last 12 months: ${totalRevenue.toLocaleString()}</p>
       <canvas
@@ -126,7 +118,7 @@ function EnterpriseAnalyticsPage() {
         height={180}
         data-testid="enterprise-revenue-chart"
       />
-    </section>
+    </Card>
   );
 }
 
@@ -145,10 +137,7 @@ function EnterpriseIntegrationsPage() {
   );
 
   return (
-    <section
-      className="module-card"
-      data-testid="enterprise-integrations-page"
-    >
+    <Card testId="enterprise-integrations-page">
       <h3>Enterprise Integrations</h3>
       <ul>
         {integrations.map((integration) => (
@@ -166,7 +155,7 @@ function EnterpriseIntegrationsPage() {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 
@@ -180,26 +169,20 @@ function EnterpriseContractsPage() {
   const validatedAt = kpiQuery.isSuccess ? format(new Date(kpiQuery.dataUpdatedAt), "yyyy-MM-dd HH:mm:ss") : "";
 
   return (
-    <section
-      className="module-card"
-      data-testid="enterprise-contracts-page"
-    >
+    <Card testId="enterprise-contracts-page">
       <h3>Enterprise API Contracts</h3>
       <p>Status: {status}</p>
       {validatedAt ? <p>Validated at: {validatedAt}</p> : null}
-    </section>
+    </Card>
   );
 }
 
 function EnterpriseWorkflowPage() {
   return (
-    <section
-      className="module-card"
-      data-testid="enterprise-workflow-page"
-    >
+    <Card testId="enterprise-workflow-page">
       <h3>Enterprise System Workflow</h3>
       <p>Topology view of enterprise request flow and analytics processing.</p>
-      <div className="flow-surface enterprise-flow">
+      <FlowSurface>
         <ReactFlow
           fitView
           nodes={enterpriseFlowNodes}
@@ -209,20 +192,17 @@ function EnterpriseWorkflowPage() {
           <Controls />
           <Background gap={16} />
         </ReactFlow>
-      </div>
-    </section>
+      </FlowSurface>
+    </Card>
   );
 }
 
 function EnterpriseNotFound() {
   return (
-    <section
-      className="module-card"
-      data-testid="enterprise-not-found"
-    >
+    <Card testId="enterprise-not-found">
       <h3>Enterprise route not found</h3>
       <p>Pick one of the enterprise routes above.</p>
-    </section>
+    </Card>
   );
 }
 
@@ -230,53 +210,20 @@ function EnterpriseModule() {
   return (
     <section data-testid="enterprise-module">
       <h2>Enterprise Module Routes</h2>
-      <ul className="module-links">
-        <li>
-          <ActiveLink
-            exact
-            href="/enterprise/dashboard"
-            testId="enterprise-tab-dashboard"
-          >
-            Dashboard
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/enterprise/analytics"
-            testId="enterprise-tab-analytics"
-          >
-            Analytics
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/enterprise/integrations"
-            testId="enterprise-tab-integrations"
-          >
-            Integrations
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/enterprise/contracts"
-            testId="enterprise-tab-contracts"
-          >
-            Contracts
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/enterprise/workflow"
-            testId="enterprise-tab-workflow"
-          >
-            Workflow
-          </ActiveLink>
-        </li>
-      </ul>
+      <ModuleNav
+        items={[
+          { href: "/enterprise/dashboard", label: "Dashboard", exact: true, testId: "enterprise-tab-dashboard" },
+          { href: "/enterprise/analytics", label: "Analytics", exact: true, testId: "enterprise-tab-analytics" },
+          {
+            href: "/enterprise/integrations",
+            label: "Integrations",
+            exact: true,
+            testId: "enterprise-tab-integrations",
+          },
+          { href: "/enterprise/contracts", label: "Contracts", exact: true, testId: "enterprise-tab-contracts" },
+          { href: "/enterprise/workflow", label: "Workflow", exact: true, testId: "enterprise-tab-workflow" },
+        ]}
+      />
 
       <Switch>
         <Route path="/enterprise">

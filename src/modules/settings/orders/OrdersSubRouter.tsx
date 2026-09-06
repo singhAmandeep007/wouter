@@ -1,9 +1,8 @@
 import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
 import { Link, Route, Switch } from "wouter";
 import { useOrder, useOrders } from "@/resources/order";
-import { ActiveLink } from "../../../shared/routing/ActiveLink";
+import { Card, FlowSurface, ModuleNav, PageMessage } from "@/shared/ui";
 import "@xyflow/react/dist/style.css";
-import "./live-order-flow.css";
 
 const liveOrderNodes = [
   { id: "n1", position: { x: 10, y: 70 }, data: { label: "Order Received" }, type: "input" },
@@ -22,10 +21,7 @@ function OrdersDefault() {
   const { data: orders = [] } = useOrders();
 
   return (
-    <section
-      className="module-card"
-      data-testid="orders-list-page"
-    >
+    <Card testId="orders-list-page">
       <h3>Orders List (Default)</h3>
       <ul>
         {orders.map((order) => (
@@ -34,7 +30,7 @@ function OrdersDefault() {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 
@@ -42,14 +38,11 @@ function OrderDetails({ orderId }: { orderId: string }) {
   const { data: order } = useOrder(orderId);
 
   if (!order) {
-    return <p>Loading order...</p>;
+    return <PageMessage testId="order-loading">Loading order...</PageMessage>;
   }
 
   return (
-    <section
-      className="module-card"
-      data-testid="order-details-page"
-    >
+    <Card testId="order-details-page">
       <h3>Order {order.id}</h3>
       <p>Status: {order.status}</p>
       <p>Total: ${order.totalAmount}</p>
@@ -62,7 +55,7 @@ function OrderDetails({ orderId }: { orderId: string }) {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 
@@ -72,18 +65,22 @@ function OrderItemDetails({ orderId, itemId }: { orderId: string; itemId: string
   const item = order?.items.find((entry) => entry.id === itemId);
 
   if (!order) {
-    return <p>Loading order item...</p>;
+    return <PageMessage testId="order-item-loading">Loading order item...</PageMessage>;
   }
 
   if (!item) {
-    return <p>Order item not found.</p>;
+    return (
+      <PageMessage
+        tone="error"
+        testId="order-item-missing"
+      >
+        Order item not found.
+      </PageMessage>
+    );
   }
 
   return (
-    <section
-      className="module-card"
-      data-testid="order-item-details-page"
-    >
+    <Card testId="order-item-details-page">
       <h3>Order Item Details</h3>
       <p>Order: {orderId}</p>
       <p>Item: {item.title}</p>
@@ -92,33 +89,27 @@ function OrderItemDetails({ orderId, itemId }: { orderId: string; itemId: string
       <p>
         <Link href={`/settings/orders/${orderId}`}>Back to order</Link>
       </p>
-    </section>
+    </Card>
   );
 }
 
 function OrdersNotFound() {
   return (
-    <section
-      className="module-card"
-      data-testid="orders-not-found"
-    >
+    <Card testId="orders-not-found">
       <h3>Orders sub-route not found</h3>
       <p>
         Return to <Link href="/settings/orders">orders list</Link>.
       </p>
-    </section>
+    </Card>
   );
 }
 
 function LiveOrderFlowPage() {
   return (
-    <section
-      className="module-card"
-      data-testid="orders-live-page"
-    >
+    <Card testId="orders-live-page">
       <h3>Live Order Pipeline</h3>
       <p>Real-time order movement from intake to shipping.</p>
-      <div className="flow-surface live-order-flow">
+      <FlowSurface>
         <ReactFlow
           fitView
           nodes={liveOrderNodes}
@@ -128,8 +119,8 @@ function LiveOrderFlowPage() {
           <Controls />
           <Background gap={16} />
         </ReactFlow>
-      </div>
-    </section>
+      </FlowSurface>
+    </Card>
   );
 }
 
@@ -137,44 +128,19 @@ function OrdersSubRouter() {
   return (
     <section data-testid="orders-sub-router">
       <h3>Orders Sub Router</h3>
-      <ul className="module-links">
-        <li>
-          <ActiveLink
-            exact
-            href="/settings/orders"
-            testId="orders-tab-list"
-          >
-            /settings/orders
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/settings/orders/o-5001"
-            testId="orders-tab-order"
-          >
-            /settings/orders/o-5001
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/settings/orders/o-5001/items/oi-1"
-            testId="orders-tab-item"
-          >
-            /settings/orders/o-5001/items/oi-1
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/settings/orders/live"
-            testId="orders-tab-live"
-          >
-            /settings/orders/live
-          </ActiveLink>
-        </li>
-      </ul>
+      <ModuleNav
+        items={[
+          { href: "/settings/orders", label: "/settings/orders", exact: true, testId: "orders-tab-list" },
+          { href: "/settings/orders/o-5001", label: "/settings/orders/o-5001", exact: true, testId: "orders-tab-order" },
+          {
+            href: "/settings/orders/o-5001/items/oi-1",
+            label: "/settings/orders/o-5001/items/oi-1",
+            exact: true,
+            testId: "orders-tab-item",
+          },
+          { href: "/settings/orders/live", label: "/settings/orders/live", exact: true, testId: "orders-tab-live" },
+        ]}
+      />
 
       <Switch>
         <Route path="/settings/orders">

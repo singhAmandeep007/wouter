@@ -1,55 +1,43 @@
 import { Redirect, Route, Switch } from "wouter";
-// NOTE: This one line will load entire vendor-analytics chunk as date-fns is part of that chunk. In a real app, we would likely want to split this further so that date-fns is in its own chunk and only loaded by the modules that need it.
+// NOTE: This one line would load the entire vendor-analytics chunk, as date-fns is part of
+// that chunk. In a real app we would split date-fns into its own chunk loaded only where
+// needed. (See docs/architecture and optimization-foundations for the chunking strategy.)
 // import { format } from "date-fns";
-import { ActiveLink } from "../../shared/routing/ActiveLink";
+import { Card, ModuleNav } from "@/shared/ui";
 
 function AdminDashboardPage() {
-  // const date = format(new Date(), "MMMM do, yyyy H:mm:ss");
-  // console.log("Admin dashboard rendered at", date);
   return (
-    <section
-      className="module-card"
-      data-testid="admin-dashboard-page"
-    >
+    <Card testId="admin-dashboard-page">
       <h3>Admin Dashboard</h3>
       <p>Overview page for admin monitoring and quick actions.</p>
-    </section>
+    </Card>
   );
 }
 
 function AdminApiPage() {
   return (
-    <section
-      className="module-card"
-      data-testid="admin-api-page"
-    >
+    <Card testId="admin-api-page">
       <h3>Admin API</h3>
       <p>API management page with endpoints and access controls.</p>
-    </section>
+    </Card>
   );
 }
 
 function AdminChatbotPage() {
   return (
-    <section
-      className="module-card"
-      data-testid="admin-chatbot-page"
-    >
+    <Card testId="admin-chatbot-page">
       <h3>Admin Chatbot</h3>
       <p>Chatbot operations page with logs and configuration controls.</p>
-    </section>
+    </Card>
   );
 }
 
 function AdminNotFound() {
   return (
-    <section
-      className="module-card"
-      data-testid="admin-not-found"
-    >
+    <Card testId="admin-not-found">
       <h3>Admin route not found</h3>
       <p>Use one of the admin tabs above.</p>
-    </section>
+    </Card>
   );
 }
 
@@ -57,35 +45,13 @@ function AdminModule() {
   return (
     <section data-testid="admin-module">
       <h2>Admin Module Routes</h2>
-      <ul className="module-links">
-        <li>
-          <ActiveLink
-            exact
-            href="/admin/dashboard"
-            testId="admin-tab-dashboard"
-          >
-            Dashboard
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/admin/api"
-            testId="admin-tab-api"
-          >
-            API
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/admin/chatbot"
-            testId="admin-tab-chatbot"
-          >
-            Chatbot
-          </ActiveLink>
-        </li>
-      </ul>
+      <ModuleNav
+        items={[
+          { href: "/admin/dashboard", label: "Dashboard", exact: true, testId: "admin-tab-dashboard" },
+          { href: "/admin/api", label: "API", exact: true, testId: "admin-tab-api" },
+          { href: "/admin/chatbot", label: "Chatbot", exact: true, testId: "admin-tab-chatbot" },
+        ]}
+      />
 
       <Switch>
         <Route path="/admin">

@@ -1,13 +1,11 @@
 import { Link, useLocation } from "wouter";
+import { Card } from "@/shared/ui";
 
 function HistoryModule() {
   const [location, navigate] = useLocation();
 
   return (
-    <section
-      className="module-card"
-      data-testid="history-module"
-    >
+    <Card testId="history-module">
       <h2>History / Navigation Demo</h2>
       <p>This route helps verify history integration with Wouter.</p>
       <p>Current path: {location}</p>
@@ -38,7 +36,7 @@ function HistoryModule() {
       <p>
         <Link href="/does-not-exist">Try global not-found route</Link>
       </p>
-    </section>
+    </Card>
   );
 }
 

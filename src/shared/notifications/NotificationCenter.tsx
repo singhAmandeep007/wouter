@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
+import { cx } from "@/shared/ui";
 import { notificationStore } from "./notificationStore";
-import "./notifications.css";
+import styles from "./notifications.module.css";
 
 /**
  * Renders the notification stack. It is a pure subscriber: `useSyncExternalStore` binds
@@ -17,7 +18,7 @@ export function NotificationCenter() {
 
   return (
     <div
-      className="notification-center"
+      className={styles.center}
       role="region"
       aria-label="Notifications"
       data-testid="notification-center"
@@ -25,14 +26,14 @@ export function NotificationCenter() {
       {notifications.map((item) => (
         <div
           key={item.id}
-          className={`notification notification--${item.kind}`}
+          className={cx(styles.item, styles[item.kind])}
           role={item.kind === "error" ? "alert" : "status"}
           data-testid={`notification-${item.kind}`}
         >
-          <span className="notification__message">{item.message}</span>
+          <span className={styles.message}>{item.message}</span>
           <button
             type="button"
-            className="notification__dismiss"
+            className={styles.dismiss}
             aria-label="Dismiss notification"
             onClick={() => notificationStore.dismiss(item.id)}
           >

@@ -2,29 +2,24 @@ import { useMemo } from "react";
 import { Link, Route, Switch } from "wouter";
 import { useCategories } from "@/resources/category";
 import { useProduct, useProducts } from "@/resources/product";
-import { ActiveLink } from "../../shared/routing/ActiveLink";
-import "./catalog.css";
+import { Card, ModuleNav, PageMessage, type ModuleNavItem } from "@/shared/ui";
 
 function CatalogHome() {
   const { data: categories = [] } = useCategories();
   const { data: products = [] } = useProducts();
 
+  const categoryItems: ModuleNavItem[] = categories.map((category) => ({
+    href: `/catalog/category/${category.id}`,
+    label: category.title,
+  }));
+
   return (
-    <section
-      className="module-card"
-      data-testid="catalog-home-page"
-    >
+    <Card testId="catalog-home-page">
       <h2>Catalog Home</h2>
       <p>This is the default route for the catalog module.</p>
 
       <h3>Categories</h3>
-      <ul className="module-links">
-        {categories.map((category) => (
-          <li key={category.id}>
-            <Link href={`/catalog/category/${category.id}`}>{category.title}</Link>
-          </li>
-        ))}
-      </ul>
+      <ModuleNav items={categoryItems} />
 
       <h3>Featured products</h3>
       <ul>
@@ -34,7 +29,7 @@ function CatalogHome() {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 
@@ -46,10 +41,7 @@ function CategoryProducts({ categoryId }: { categoryId: string }) {
   });
 
   return (
-    <section
-      className="module-card"
-      data-testid="catalog-category-page"
-    >
+    <Card testId="catalog-category-page">
       <h2>Category: {categoryId}</h2>
       <ul>
         {products.map((product) => (
@@ -58,7 +50,7 @@ function CategoryProducts({ categoryId }: { categoryId: string }) {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 
@@ -68,18 +60,22 @@ function ProductDetails({ productId }: { productId: string }) {
   const { data: product, error, isPending } = useProduct(productId);
 
   if (error) {
-    return <p>Failed to load product: {error.message}</p>;
+    return (
+      <PageMessage
+        tone="error"
+        testId="catalog-product-error"
+      >
+        Failed to load product: {error.message}
+      </PageMessage>
+    );
   }
 
   if (isPending) {
-    return <p>Loading product...</p>;
+    return <PageMessage testId="catalog-product-loading">Loading product...</PageMessage>;
   }
 
   return (
-    <section
-      className="module-card"
-      data-testid="catalog-product-page"
-    >
+    <Card testId="catalog-product-page">
       <h2>{product.title}</h2>
       <p>{product.description}</p>
       <p>Price: ${product.price}</p>
@@ -87,46 +83,37 @@ function ProductDetails({ productId }: { productId: string }) {
       <p>
         <Link href={`/catalog/category/${product.categoryId}`}>Back to category</Link>
       </p>
-    </section>
+    </Card>
   );
 }
 
 function CatalogNotFound() {
   return (
-    <section
-      className="module-card"
-      data-testid="catalog-not-found"
-    >
+    <Card testId="catalog-not-found">
       <h2>Catalog route not found</h2>
       <p>
         Go to <Link href="/catalog">catalog default route</Link>.
       </p>
-    </section>
+    </Card>
   );
 }
 
 function CatalogModule() {
-  const routeHints = useMemo(
-    () => ["/catalog", "/catalog/category/phones", "/catalog/product/p-100", "/catalog/unknown-path"],
+  const routeHints: ModuleNavItem[] = useMemo(
+    () =>
+      ["/catalog", "/catalog/category/phones", "/catalog/product/p-100", "/catalog/unknown-path"].map((path) => ({
+        href: path,
+        label: path,
+        exact: true,
+        testId: `catalog-hint-${path.replaceAll("/", "-").replace(/^-+/, "")}`,
+      })),
     []
   );
 
   return (
     <section data-testid="catalog-module">
       <h2>Catalog Module Routes</h2>
-      <ul className="module-links">
-        {routeHints.map((path) => (
-          <li key={path}>
-            <ActiveLink
-              exact
-              href={path}
-              testId={`catalog-hint-${path.replaceAll("/", "-").replace(/^-+/, "")}`}
-            >
-              {path}
-            </ActiveLink>
-          </li>
-        ))}
-      </ul>
+      <ModuleNav items={routeHints} />
 
       <Switch>
         <Route path="/catalog">

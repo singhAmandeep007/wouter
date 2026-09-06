@@ -46,6 +46,10 @@ export function ActiveLink({
   return (
     <Link
       className={mergedClassName}
+      // Stable, accessible active-state signal — independent of (now hashed) CSS-Module
+      // class names. Screen readers announce the current page; tests assert on this
+      // rather than a class name that changes when styles change.
+      aria-current={isActive ? "page" : undefined}
       data-testid={testId}
       href={href}
     >

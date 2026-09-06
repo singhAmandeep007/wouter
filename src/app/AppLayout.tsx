@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { ActiveLink } from "../shared/routing/ActiveLink";
-import "./layout.css";
+import styles from "./layout.module.css";
 
 type NavItem = {
   label: string;
@@ -22,7 +22,8 @@ function SidebarLink({ href, label }: NavItem) {
   return (
     <li>
       <ActiveLink
-        className="sidebar-link"
+        className={styles.sidebarLink}
+        activeClassName={styles.sidebarLinkActive}
         href={href}
         testId={navTestId}
       >
@@ -36,16 +37,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   return (
-    <div className="app-shell">
+    <div className={styles.appShell}>
       <header
-        className="navbar"
+        className={styles.navbar}
         data-testid="navbar"
       >
         <div>
           <h1>Wouter E-Commerce Demo</h1>
-          <p className="subtitle">Modular routes, nested routes, lazy loading, mock APIs</p>
+          <p className={styles.subtitle}>Modular routes, nested routes, lazy loading, mock APIs</p>
         </div>
-        <div className="history-controls">
+        <div className={styles.historyControls}>
           <button
             onClick={() => window.history.back()}
             type="button"
@@ -62,9 +63,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="content-shell">
+      <div className={styles.contentShell}>
         <aside
-          className="sidebar"
+          className={styles.sidebar}
           data-testid="sidebar"
         >
           <h2>Navigation</h2>
@@ -80,7 +81,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </aside>
 
         <main
-          className="main-content"
+          className={styles.mainContent}
           data-testid="main-content"
         >
           {children}

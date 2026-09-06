@@ -2,48 +2,23 @@ import { Suspense, lazy, useState } from "react";
 import { Link, Route, Switch } from "wouter";
 import { useProfile, useUpdateProfile } from "@/resources/user-profile";
 import { usePaymentMethods } from "@/resources/payment-method";
-import { ActiveLink } from "../../shared/routing/ActiveLink";
-import "./settings.css";
+import { Card, ModuleNav, PageMessage } from "@/shared/ui";
 
 const OrdersSubRouter = lazy(() => import("./orders/OrdersSubRouter"));
 
 function SettingsIndex() {
   return (
-    <section
-      className="module-card"
-      data-testid="settings-home-page"
-    >
+    <Card testId="settings-home-page">
       <h2>Settings Home</h2>
       <p>Default settings route. Choose a nested route:</p>
-      <ul className="module-links">
-        <li>
-          <ActiveLink
-            exact
-            href="/settings/profile"
-            testId="settings-tab-profile"
-          >
-            Profile
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            href="/settings/orders"
-            testId="settings-tab-orders"
-          >
-            Orders (sub-router)
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink
-            exact
-            href="/settings/payment"
-            testId="settings-tab-payment"
-          >
-            Payment
-          </ActiveLink>
-        </li>
-      </ul>
-    </section>
+      <ModuleNav
+        items={[
+          { href: "/settings/profile", label: "Profile", exact: true, testId: "settings-tab-profile" },
+          { href: "/settings/orders", label: "Orders (sub-router)", testId: "settings-tab-orders" },
+          { href: "/settings/payment", label: "Payment", exact: true, testId: "settings-tab-payment" },
+        ]}
+      />
+    </Card>
   );
 }
 
@@ -53,17 +28,14 @@ function ProfileRoute() {
   const [name, setName] = useState("");
 
   if (!profile) {
-    return <p>Loading profile...</p>;
+    return <PageMessage testId="settings-profile-loading">Loading profile...</PageMessage>;
   }
 
   // Controlled input seeds from the loaded profile; empty until edited.
   const nameValue = name || profile.name;
 
   return (
-    <section
-      className="module-card"
-      data-testid="settings-profile-page"
-    >
+    <Card testId="settings-profile-page">
       <h2>Profile</h2>
       <p>Name: {profile.name}</p>
       <p>Email: {profile.email}</p>
@@ -92,7 +64,7 @@ function ProfileRoute() {
           {updateProfile.isPending ? "Saving..." : "Save"}
         </button>
       </form>
-    </section>
+    </Card>
   );
 }
 
@@ -100,10 +72,7 @@ function PaymentRoute() {
   const { data: methods = [] } = usePaymentMethods();
 
   return (
-    <section
-      className="module-card"
-      data-testid="settings-payment-page"
-    >
+    <Card testId="settings-payment-page">
       <h2>Payment Methods</h2>
       <ul>
         {methods.map((method) => (
@@ -112,21 +81,18 @@ function PaymentRoute() {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }
 
 function SettingsNotFound() {
   return (
-    <section
-      className="module-card"
-      data-testid="settings-not-found"
-    >
+    <Card testId="settings-not-found">
       <h2>Settings route not found</h2>
       <p>
         Go back to <Link href="/settings">settings home</Link>
       </p>
-    </section>
+    </Card>
   );
 }
 
@@ -145,12 +111,12 @@ function SettingsModule() {
           <PaymentRoute />
         </Route>
         <Route path="/settings/orders/*">
-          <Suspense fallback={<p>Loading orders sub-router...</p>}>
+          <Suspense fallback={<PageMessage>Loading orders sub-router...</PageMessage>}>
             <OrdersSubRouter />
           </Suspense>
         </Route>
         <Route path="/settings/orders">
-          <Suspense fallback={<p>Loading orders sub-router...</p>}>
+          <Suspense fallback={<PageMessage>Loading orders sub-router...</PageMessage>}>
             <OrdersSubRouter />
           </Suspense>
         </Route>

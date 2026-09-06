@@ -1,0 +1,16 @@
+.card {
+  border: 1px solid #ddd;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+/* Descendant rules absorbed from the old per-module CSS (dashboard/catalog/settings). */
+.card ul {
+  padding-left: 1rem;
+}
+
+.card h3,
+.card h4 {
+  margin-top: 0.35rem;
+}
