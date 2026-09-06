@@ -1,18 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, Route, Switch } from "wouter";
-import { api } from "../../shared/api/client";
+import { useCategories } from "@/resources/category";
+import { useProduct, useProducts } from "@/resources/product";
 import { ActiveLink } from "../../shared/routing/ActiveLink";
-import type { Category, Product } from "../../shared/api/types";
 import "./catalog.css";
 
 function CatalogHome() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    void api.getCategories().then(setCategories);
-    void api.getProducts().then(setProducts);
-  }, []);
+  const { data: categories = [] } = useCategories();
+  const { data: products = [] } = useProducts();
 
   return (
     <section
@@ -44,11 +39,11 @@ function CatalogHome() {
 }
 
 function CategoryProducts({ categoryId }: { categoryId: string }) {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    void api.getProducts().then((all) => setProducts(all.filter((item) => item.categoryId === categoryId)));
-  }, [categoryId]);
+  // `select` derives the filtered list from the cached products query — the underlying
+  // fetch is shared/deduped with CatalogHome, and the filter re-runs without refetching.
+  const { data: products = [] } = useProducts({
+    select: (all) => all.filter((item) => item.categoryId === categoryId),
+  });
 
   return (
     <section
@@ -68,21 +63,15 @@ function CategoryProducts({ categoryId }: { categoryId: string }) {
 }
 
 function ProductDetails({ productId }: { productId: string }) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    api
-      .getProductById(productId)
-      .then(setProduct)
-      .catch((err: Error) => setError(err.message));
-  }, [productId]);
+  // No race condition: TanStack Query keys the request by productId and discards stale
+  // responses, so fast navigation between products can't show the wrong one.
+  const { data: product, error, isPending } = useProduct(productId);
 
   if (error) {
-    return <p>Failed to load product: {error}</p>;
+    return <p>Failed to load product: {error.message}</p>;
   }
 
-  if (!product) {
+  if (isPending) {
     return <p>Loading product...</p>;
   }
 

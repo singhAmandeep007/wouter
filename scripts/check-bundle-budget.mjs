@@ -6,39 +6,59 @@ import { Writable } from "node:stream";
 
 const assetsDir = join(process.cwd(), "dist", "assets");
 const reportPath = join(process.cwd(), "dist", "bundle-budget-report.json");
-const BUDGET_LIMIT_KIB = 500;
-const BUDGET_LIMIT_BYTES = BUDGET_LIMIT_KIB * 1024;
+const KIB = 1024;
 
+// Per-chunk budgets tuned to realistic sizes with headroom, instead of a single flat
+// limit (a flat raw==gzip limit made the gzip check dead — gzip is always < raw < limit).
+// gzip is what users download, so it is the primary gate; raw guards parse cost.
 const budgets = [
-  {
-    name: "vendor-core",
-    prefix: "vendor-core-",
-    maxRawBytes: BUDGET_LIMIT_BYTES,
-    maxGzipBytes: BUDGET_LIMIT_BYTES,
-    required: true,
-  },
-  {
-    name: "vendor-flow",
-    prefix: "vendor-flow-",
-    maxRawBytes: BUDGET_LIMIT_BYTES,
-    maxGzipBytes: BUDGET_LIMIT_BYTES,
-    required: true,
-  },
+  // React + router + TanStack Query — loaded at first paint via the root provider.
+  { name: "vendor-core", prefix: "vendor-core-", maxRawBytes: 300 * KIB, maxGzipBytes: 95 * KIB, required: true },
+  // @xyflow/react — lazy, loads with enterprise/orders-live.
+  { name: "vendor-flow", prefix: "vendor-flow-", maxRawBytes: 220 * KIB, maxGzipBytes: 75 * KIB, required: true },
+  // lodash-es + date-fns + zod. Chart.js MUST NOT be here (see assertChartIsSplit). If it
+  // regresses back into this chunk it jumps ~285KB/94KB and trips this budget.
   {
     name: "vendor-analytics",
     prefix: "vendor-analytics-",
-    maxRawBytes: BUDGET_LIMIT_BYTES,
-    maxGzipBytes: BUDGET_LIMIT_BYTES,
+    maxRawBytes: 150 * KIB,
+    maxGzipBytes: 45 * KIB,
     required: true,
   },
-  {
-    name: "app-entry",
-    prefix: "index-",
-    maxRawBytes: BUDGET_LIMIT_BYTES,
-    maxGzipBytes: BUDGET_LIMIT_BYTES,
-    required: true,
-  },
+  // App entry chunk.
+  { name: "app-entry", prefix: "index-", maxRawBytes: 60 * KIB, maxGzipBytes: 20 * KIB, required: true },
 ];
+
+// A signature that only appears in Chart.js's compiled controllers.
+const CHART_SIGNATURE = /BarController|LineController/;
+
+/**
+ * Guard for optimization #1: Chart.js is dynamically imported and must live in its own
+ * lazy chunk, never in an eagerly-loaded vendor chunk. Fails the build if the signature
+ * leaks into vendor-core or vendor-analytics (which would mean the dynamic import was
+ * collapsed back into an eager one by a manualChunks change).
+ */
+function assertChartIsSplit(jsFiles) {
+  const eagerViolations = [];
+  let chartChunk = null;
+
+  for (const file of jsFiles) {
+    const contents = readFileSync(join(assetsDir, file), "utf-8");
+    if (!CHART_SIGNATURE.test(contents)) continue;
+
+    if (file.startsWith("vendor-core-") || file.startsWith("vendor-analytics-")) {
+      eagerViolations.push(`chart.js code found in eager chunk ${file} (it must be lazily split)`);
+    } else {
+      chartChunk = file;
+    }
+  }
+
+  if (!chartChunk && eagerViolations.length === 0) {
+    eagerViolations.push("no chunk containing chart.js was found (expected a lazy chart chunk)");
+  }
+
+  return eagerViolations;
+}
 
 async function gzipSize(filePath) {
   let total = 0;
@@ -66,6 +86,9 @@ async function main() {
   const files = readdirSync(assetsDir).filter((file) => file.endsWith(".js"));
   const violations = [];
   const results = [];
+
+  // Optimization guard: chart.js must remain lazily split.
+  violations.push(...assertChartIsSplit(files));
 
   for (const budget of budgets) {
     const matched = files.find((file) => file.startsWith(budget.prefix));

@@ -1,0 +1,433 @@
+openapi: 3.1.0
+info:
+  title: Wouter E-Commerce Demo API
+  version: 1.0.0
+  description: >
+    Single source of truth for the demo API. Types are generated from this file via
+    `npm run codegen` (openapi-typescript). Do not hand-edit generated types; edit this
+    spec instead. Endpoints are grouped by `tags`, one tag per resource module.
+servers:
+  - url: /
+    description: Same-origin (intercepted by MSW in dev / mock builds)
+
+tags:
+  - name: dashboard
+    description: Aggregated landing metrics
+  - name: user-profile
+    description: Account profile
+  - name: payment-method
+    description: Stored payment methods
+  - name: category
+    description: Catalog categories
+  - name: product
+    description: Catalog products
+  - name: order
+    description: Customer orders
+  - name: enterprise
+    description: Enterprise analytics, integrations and chatbot telemetry
+
+paths:
+  /api/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard summary
+      responses:
+        "200":
+          description: Aggregated dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /api/settings/profile:
+    get:
+      operationId: getUserProfile
+      tags: [user-profile]
+      summary: Current user profile
+      responses:
+        "200":
+          description: The user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+    put:
+      operationId: updateUserProfile
+      tags: [user-profile]
+      summary: Update the current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileInput"
+      responses:
+        "200":
+          description: The updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /api/settings/payment-methods:
+    get:
+      operationId: listPaymentMethods
+      tags: [payment-method]
+      summary: List payment methods
+      responses:
+        "200":
+          description: Payment methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentMethod"
+
+  /api/catalog/categories:
+    get:
+      operationId: listCategories
+      tags: [category]
+      summary: List catalog categories
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /api/catalog/products:
+    get:
+      operationId: listProducts
+      tags: [product]
+      summary: List catalog products
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /api/catalog/products/{productId}:
+    get:
+      operationId: getProductById
+      tags: [product]
+      summary: Get a single product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /api/orders:
+    get:
+      operationId: listOrders
+      tags: [order]
+      summary: List orders
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /api/orders/{orderId}:
+    get:
+      operationId: getOrderById
+      tags: [order]
+      summary: Get a single order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /api/enterprise/kpi:
+    get:
+      operationId: getEnterpriseKpi
+      tags: [enterprise]
+      summary: Enterprise KPI snapshot
+      responses:
+        "200":
+          description: KPI values
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnterpriseKpi"
+
+  /api/enterprise/revenue:
+    get:
+      operationId: getEnterpriseRevenue
+      tags: [enterprise]
+      summary: Enterprise revenue points
+      responses:
+        "200":
+          description: Revenue points
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RevenuePoint"
+
+  /api/enterprise/integrations:
+    get:
+      operationId: getEnterpriseIntegrations
+      tags: [enterprise]
+      summary: Enterprise integration statuses
+      responses:
+        "200":
+          description: Integration statuses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IntegrationStatus"
+
+  /api/enterprise/chatbot/transcripts:
+    get:
+      operationId: getChatbotTranscripts
+      tags: [enterprise]
+      summary: Chatbot transcript telemetry
+      responses:
+        "200":
+          description: Transcripts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatbotTranscript"
+
+components:
+  schemas:
+    UserProfile:
+      type: object
+      required: [id, name, email, loyaltyTier, defaultPaymentMethod]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        loyaltyTier:
+          type: string
+          enum: [bronze, silver, gold]
+        defaultPaymentMethod:
+          type: string
+
+    UpdateUserProfileInput:
+      type: object
+      description: Editable fields of the user profile.
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        defaultPaymentMethod:
+          type: string
+
+    Product:
+      type: object
+      required: [id, title, categoryId, price, stock, description]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        categoryId:
+          type: string
+        price:
+          type: number
+          minimum: 0
+        stock:
+          type: integer
+          minimum: 0
+        description:
+          type: string
+
+    Category:
+      type: object
+      required: [id, title]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+
+    OrderItem:
+      type: object
+      required: [id, productId, title, quantity, unitPrice]
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        title:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+
+    Order:
+      type: object
+      required: [id, status, createdAt, totalAmount, items]
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [created, paid, shipped, delivered]
+        createdAt:
+          type: string
+          format: date-time
+        totalAmount:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+
+    DashboardSummary:
+      type: object
+      required: [profile, openOrders, revenueMonth, lowStockProducts]
+      properties:
+        profile:
+          $ref: "#/components/schemas/UserProfile"
+        openOrders:
+          type: integer
+        revenueMonth:
+          type: number
+        lowStockProducts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+
+    PaymentMethod:
+      type: object
+      required: [id, type, label, isDefault]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [card, upi, wallet]
+        label:
+          type: string
+        isDefault:
+          type: boolean
+
+    EnterpriseKpi:
+      type: object
+      required: [activeTenants, apiRequestsPerMinute, slaPercent, unresolvedIncidents]
+      properties:
+        activeTenants:
+          type: integer
+          minimum: 0
+        apiRequestsPerMinute:
+          type: integer
+          minimum: 0
+        slaPercent:
+          type: number
+          minimum: 0
+          maximum: 100
+        unresolvedIncidents:
+          type: integer
+          minimum: 0
+
+    RevenuePoint:
+      type: object
+      required: [month, amount, region]
+      properties:
+        month:
+          type: string
+        amount:
+          type: number
+        region:
+          type: string
+          enum: [apac, emea, amer]
+
+    IntegrationStatus:
+      type: object
+      required: [id, name, owner, health, latencyMs]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        health:
+          type: string
+          enum: [healthy, degraded, down]
+        latencyMs:
+          type: integer
+
+    ChatbotTranscript:
+      type: object
+      required: [id, tenant, createdAt, tokens, channel]
+      properties:
+        id:
+          type: string
+        tenant:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        tokens:
+          type: integer
+        channel:
+          type: string
+          enum: [web, slack, teams]
+
+    ApiError:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        code:
+          type: string

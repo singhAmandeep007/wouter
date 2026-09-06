@@ -1,8 +1,8 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { Link, Route, Switch } from "wouter";
-import { api } from "../../shared/api/client";
+import { useProfile, useUpdateProfile } from "@/resources/user-profile";
+import { usePaymentMethods } from "@/resources/payment-method";
 import { ActiveLink } from "../../shared/routing/ActiveLink";
-import type { PaymentMethod, UserProfile } from "../../shared/api/types";
 import "./settings.css";
 
 const OrdersSubRouter = lazy(() => import("./orders/OrdersSubRouter"));
@@ -48,15 +48,16 @@ function SettingsIndex() {
 }
 
 function ProfileRoute() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-
-  useEffect(() => {
-    void api.getProfile().then(setProfile);
-  }, []);
+  const { data: profile } = useProfile();
+  const updateProfile = useUpdateProfile();
+  const [name, setName] = useState("");
 
   if (!profile) {
     return <p>Loading profile...</p>;
   }
+
+  // Controlled input seeds from the loaded profile; empty until edited.
+  const nameValue = name || profile.name;
 
   return (
     <section
@@ -67,16 +68,36 @@ function ProfileRoute() {
       <p>Name: {profile.name}</p>
       <p>Email: {profile.email}</p>
       <p>Loyalty: {profile.loyaltyTier}</p>
+
+      <form
+        data-testid="profile-edit-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          updateProfile.mutate({ name: nameValue });
+        }}
+      >
+        <label>
+          Display name{" "}
+          <input
+            data-testid="profile-name-input"
+            value={nameValue}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </label>{" "}
+        <button
+          data-testid="profile-save-button"
+          type="submit"
+          disabled={updateProfile.isPending}
+        >
+          {updateProfile.isPending ? "Saving..." : "Save"}
+        </button>
+      </form>
     </section>
   );
 }
 
 function PaymentRoute() {
-  const [methods, setMethods] = useState<PaymentMethod[]>([]);
-
-  useEffect(() => {
-    void api.getPaymentMethods().then(setMethods);
-  }, []);
+  const { data: methods = [] } = usePaymentMethods();
 
   return (
     <section

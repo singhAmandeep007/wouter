@@ -1,25 +1,15 @@
-import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { api } from "../../shared/api/client";
-import type { DashboardSummary } from "../../shared/api/types";
+import { useDashboardSummary } from "@/resources/dashboard";
 import "./dashboard.css";
 
 function DashboardModule() {
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    api
-      .getSummary()
-      .then(setSummary)
-      .catch((err: Error) => setError(err.message));
-  }, []);
+  const { data: summary, error, isPending } = useDashboardSummary();
 
   if (error) {
-    return <p>Failed to load dashboard: {error}</p>;
+    return <p>Failed to load dashboard: {error.message}</p>;
   }
 
-  if (!summary) {
+  if (isPending) {
     return <p>Loading dashboard...</p>;
   }
 

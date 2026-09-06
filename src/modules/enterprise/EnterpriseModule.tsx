@@ -1,12 +1,16 @@
 import { format } from "date-fns";
 import { groupBy, orderBy, sumBy } from "lodash-es";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
-import { Route, Switch, useLocation } from "wouter";
-import { z } from "zod";
-import { api } from "../../shared/api/client";
+import { Redirect, Route, Switch } from "wouter";
+import {
+  useEnterpriseIntegrations,
+  useEnterpriseKpi,
+  useEnterpriseRevenue,
+  useEnterpriseTranscripts,
+} from "@/resources/enterprise";
+import type { ChatbotTranscript, IntegrationStatus, RevenuePoint } from "@/resources/enterprise";
 import { ActiveLink } from "../../shared/routing/ActiveLink";
-import type { ChatbotTranscript, EnterpriseKpi, IntegrationStatus, RevenuePoint } from "../../shared/api/types";
 import "@xyflow/react/dist/style.css";
 import "./enterprise.css";
 import "./enterprise-flow.css";
@@ -27,24 +31,10 @@ const enterpriseFlowEdges = [
   { id: "ee4-5", source: "e4", target: "e5", animated: true },
 ];
 
-const kpiSchema = z.object({
-  activeTenants: z.number().int().nonnegative(),
-  apiRequestsPerMinute: z.number().int().nonnegative(),
-  slaPercent: z.number().min(0).max(100),
-  unresolvedIncidents: z.number().int().nonnegative(),
-});
-
 function EnterpriseDashboardPage() {
-  const [kpi, setKpi] = useState<EnterpriseKpi | null>(null);
-
-  useEffect(() => {
-    void api.getEnterpriseKpi().then((payload) => {
-      const parsed = kpiSchema.safeParse(payload);
-      if (parsed.success) {
-        setKpi(parsed.data);
-      }
-    });
-  }, []);
+  // Runtime zod validation now lives in enterpriseService.getKpi(); an invalid payload
+  // rejects the query, so `kpi` is only set when the contract holds.
+  const { data: kpi } = useEnterpriseKpi();
 
   if (!kpi) {
     return <p data-testid="enterprise-dashboard-loading">Loading enterprise dashboard...</p>;
@@ -79,12 +69,8 @@ function EnterpriseDashboardPage() {
 }
 
 function EnterpriseAnalyticsPage() {
-  const [revenue, setRevenue] = useState<RevenuePoint[]>([]);
+  const { data: revenue = [] } = useEnterpriseRevenue();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    void api.getEnterpriseRevenue().then(setRevenue);
-  }, []);
 
   useEffect(() => {
     if (revenue.length === 0 || !canvasRef.current) {
@@ -145,23 +131,13 @@ function EnterpriseAnalyticsPage() {
 }
 
 function EnterpriseIntegrationsPage() {
-  const [integrations, setIntegrations] = useState<IntegrationStatus[]>([]);
-  const [transcripts, setTranscripts] = useState<ChatbotTranscript[]>([]);
+  const { data: integrationData = [] } = useEnterpriseIntegrations();
+  const { data: transcripts = [] } = useEnterpriseTranscripts();
 
-  useEffect(() => {
-    async function loadData() {
-      const integrationData = await api.getEnterpriseIntegrations();
-      setIntegrations(orderBy(integrationData, [(entry: IntegrationStatus) => entry.latencyMs], ["desc"]));
-
-      const axiosModule = await import("axios");
-      const transcriptResponse = await axiosModule.default.get<ChatbotTranscript[]>(
-        "/api/enterprise/chatbot/transcripts"
-      );
-      setTranscripts(transcriptResponse.data);
-    }
-
-    void loadData();
-  }, []);
+  const integrations = useMemo(
+    () => orderBy(integrationData, [(entry: IntegrationStatus) => entry.latencyMs], ["desc"]),
+    [integrationData]
+  );
 
   const transcriptsByChannel = useMemo<Record<string, ChatbotTranscript[]>>(
     () => groupBy(transcripts, (item: ChatbotTranscript) => item.channel),
@@ -195,20 +171,13 @@ function EnterpriseIntegrationsPage() {
 }
 
 function EnterpriseContractsPage() {
-  const [validatedAt, setValidatedAt] = useState<string>("");
-  const [status, setStatus] = useState<string>("Validating...");
+  // Reuses the SAME cached KPI query as the dashboard tab (deduped by key). The zod
+  // validation in the service is the contract check: success => valid, rejection => invalid.
+  const kpiQuery = useEnterpriseKpi();
 
-  useEffect(() => {
-    void api.getEnterpriseKpi().then((payload) => {
-      const result = kpiSchema.safeParse(payload);
-      if (result.success) {
-        setStatus("Contract valid");
-        setValidatedAt(format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-      } else {
-        setStatus("Contract invalid");
-      }
-    });
-  }, []);
+  const status = kpiQuery.isPending ? "Validating..." : kpiQuery.isError ? "Contract invalid" : "Contract valid";
+  // `dataUpdatedAt` is a stable timestamp from the cache, so this doesn't churn per render.
+  const validatedAt = kpiQuery.isSuccess ? format(new Date(kpiQuery.dataUpdatedAt), "yyyy-MM-dd HH:mm:ss") : "";
 
   return (
     <section
@@ -243,16 +212,6 @@ function EnterpriseWorkflowPage() {
       </div>
     </section>
   );
-}
-
-function EnterpriseDefaultRedirect() {
-  const [, navigate] = useLocation();
-
-  useEffect(() => {
-    void navigate("/enterprise/dashboard", { replace: true });
-  }, [navigate]);
-
-  return <p data-testid="enterprise-redirecting">Redirecting to enterprise dashboard...</p>;
 }
 
 function EnterpriseNotFound() {
@@ -321,7 +280,10 @@ function EnterpriseModule() {
 
       <Switch>
         <Route path="/enterprise">
-          <EnterpriseDefaultRedirect />
+          <Redirect
+            to="/enterprise/dashboard"
+            replace
+          />
         </Route>
         <Route path="/enterprise/dashboard">
           <EnterpriseDashboardPage />

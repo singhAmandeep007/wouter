@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Route, Switch, useLocation } from "wouter";
+import { Redirect, Route, Switch } from "wouter";
 // NOTE: This one line will load entire vendor-analytics chunk as date-fns is part of that chunk. In a real app, we would likely want to split this further so that date-fns is in its own chunk and only loaded by the modules that need it.
 // import { format } from "date-fns";
 import { ActiveLink } from "../../shared/routing/ActiveLink";
@@ -40,16 +39,6 @@ function AdminChatbotPage() {
       <p>Chatbot operations page with logs and configuration controls.</p>
     </section>
   );
-}
-
-function AdminDefaultRedirect() {
-  const [, navigate] = useLocation();
-
-  useEffect(() => {
-    void navigate("/admin/api", { replace: true });
-  }, [navigate]);
-
-  return <p data-testid="admin-redirecting">Redirecting to admin API...</p>;
 }
 
 function AdminNotFound() {
@@ -100,7 +89,10 @@ function AdminModule() {
 
       <Switch>
         <Route path="/admin">
-          <AdminDefaultRedirect />
+          <Redirect
+            to="/admin/api"
+            replace
+          />
         </Route>
         <Route path="/admin/dashboard">
           <AdminDashboardPage />

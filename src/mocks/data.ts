@@ -1,14 +1,16 @@
-import type {
-  Category,
-  ChatbotTranscript,
-  EnterpriseKpi,
-  IntegrationStatus,
-  Order,
-  PaymentMethod,
-  Product,
-  RevenuePoint,
-  UserProfile,
-} from "../shared/api/types";
+import type { components } from "@/shared/api/generated/schema";
+
+// Mock records are typed against the generated OpenAPI schemas — same single source of
+// truth the app consumes — so the mocks can never drift from the contract.
+type Category = components["schemas"]["Category"];
+type ChatbotTranscript = components["schemas"]["ChatbotTranscript"];
+type EnterpriseKpi = components["schemas"]["EnterpriseKpi"];
+type IntegrationStatus = components["schemas"]["IntegrationStatus"];
+type Order = components["schemas"]["Order"];
+type PaymentMethod = components["schemas"]["PaymentMethod"];
+type Product = components["schemas"]["Product"];
+type RevenuePoint = components["schemas"]["RevenuePoint"];
+type UserProfile = components["schemas"]["UserProfile"];
 
 export const categories: Category[] = [
   { id: "phones", title: "Phones" },

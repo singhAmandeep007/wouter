@@ -8,6 +8,13 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
 
+    /* Path aliases (mirror vite.config.ts resolve.alias).
+       No baseUrl needed: with moduleResolution "bundler", paths resolve relative
+       to this tsconfig (baseUrl is deprecated as of TS 5.9). */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

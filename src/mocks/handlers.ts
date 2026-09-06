@@ -31,6 +31,14 @@ export const handlers = [
     return HttpResponse.json(profile);
   }),
 
+  http.put("/api/settings/profile", async ({ request }) => {
+    await delay(200);
+    const updates = (await request.json()) as Partial<typeof profile>;
+    // Mutate the mock record in place so subsequent GETs reflect the change.
+    Object.assign(profile, updates);
+    return HttpResponse.json(profile);
+  }),
+
   http.get("/api/settings/payment-methods", async () => {
     await delay(180);
     return HttpResponse.json(paymentMethods);

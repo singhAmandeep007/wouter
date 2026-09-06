@@ -1,6 +1,7 @@
-import { Suspense, lazy, useEffect } from "react";
-import { Link, Route, Switch, useLocation } from "wouter";
+import { Suspense, lazy } from "react";
+import { Link, Redirect, Route, Switch, useLocation } from "wouter";
 import { AppLayout } from "./app/AppLayout";
+import { ErrorBoundary } from "@/shared/errors";
 
 const DashboardModule = lazy(() => import("./modules/dashboard/DashboardModule"));
 const CatalogModule = lazy(() => import("./modules/catalog/CatalogModule"));
@@ -39,24 +40,27 @@ function NotFoundRoute() {
   );
 }
 
-function RootRedirect() {
-  const [, navigate] = useLocation();
-
-  useEffect(() => {
-    void navigate("/dashboard", { replace: true });
-  }, [navigate]);
-
-  return <p data-testid="root-redirecting">Redirecting to dashboard...</p>;
-}
-
 function App() {
+  const [location] = useLocation();
+
   return (
     <AppLayout>
-      <Suspense fallback={<LoadingRoute />}>
-        <Switch>
+      {/*
+        Route-level boundary: catches render errors AND failed lazy-module imports thrown
+        through Suspense, so one broken module shows a localized fallback instead of
+        white-screening the shell. `resetKeys={[location]}` clears the error when the user
+        navigates, so a transient failure doesn't trap them on a broken route.
+      */}
+      <ErrorBoundary resetKeys={[location]}>
+        <Suspense fallback={<LoadingRoute />}>
+          <Switch>
           <Route path="/">
-            <RootRedirect />
-            {/* <DashboardModule /> */}
+            {/* Declarative redirect: renders null and navigates during render, so there is
+                no "Redirecting..." flash of intermediate content. */}
+            <Redirect
+              to="/dashboard"
+              replace
+            />
           </Route>
           <Route path="/dashboard">
             <DashboardModule />
@@ -92,7 +96,8 @@ function App() {
             <NotFoundRoute />
           </Route>
         </Switch>
-      </Suspense>
+        </Suspense>
+      </ErrorBoundary>
     </AppLayout>
   );
 }

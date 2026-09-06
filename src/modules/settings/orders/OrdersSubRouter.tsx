@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
 import { Link, Route, Switch } from "wouter";
-import { api } from "../../../shared/api/client";
+import { useOrder, useOrders } from "@/resources/order";
 import { ActiveLink } from "../../../shared/routing/ActiveLink";
-import type { Order } from "../../../shared/api/types";
 import "@xyflow/react/dist/style.css";
 import "./live-order-flow.css";
 
@@ -21,11 +19,7 @@ const liveOrderEdges = [
 ];
 
 function OrdersDefault() {
-  const [orders, setOrders] = useState<Order[]>([]);
-
-  useEffect(() => {
-    void api.getOrders().then(setOrders);
-  }, []);
+  const { data: orders = [] } = useOrders();
 
   return (
     <section
@@ -45,11 +39,7 @@ function OrdersDefault() {
 }
 
 function OrderDetails({ orderId }: { orderId: string }) {
-  const [order, setOrder] = useState<Order | null>(null);
-
-  useEffect(() => {
-    void api.getOrderById(orderId).then(setOrder);
-  }, [orderId]);
+  const { data: order } = useOrder(orderId);
 
   if (!order) {
     return <p>Loading order...</p>;
@@ -77,11 +67,7 @@ function OrderDetails({ orderId }: { orderId: string }) {
 }
 
 function OrderItemDetails({ orderId, itemId }: { orderId: string; itemId: string }) {
-  const [order, setOrder] = useState<Order | null>(null);
-
-  useEffect(() => {
-    void api.getOrderById(orderId).then(setOrder);
-  }, [orderId]);
+  const { data: order } = useOrder(orderId);
 
   const item = order?.items.find((entry) => entry.id === itemId);
 
