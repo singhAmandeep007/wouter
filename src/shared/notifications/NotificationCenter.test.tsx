@@ -4,7 +4,10 @@ import userEvent from "@testing-library/user-event";
 import { NotificationCenter } from "./NotificationCenter";
 import { notificationStore, notify } from "./notificationStore";
 
-afterEach(() => notificationStore.clear());
+// Wrapped in act(): this file-local afterEach runs before the global cleanup() (afterEach
+// hooks run LIFO), so clear() emits a store update while <NotificationCenter/> is still
+// mounted — that re-render must be inside act() to avoid a warning.
+afterEach(() => act(() => notificationStore.clear()));
 
 // The store lives outside React, so mutations must be wrapped in act() to flush the
 // useSyncExternalStore-driven re-render before assertions.
