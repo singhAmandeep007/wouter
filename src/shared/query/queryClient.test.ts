@@ -16,7 +16,7 @@ describe("QueryCache error notifications", () => {
     const client = createAppQueryClient({ defaultOptions: { queries: { retry: false } } });
 
     await client
-      .fetchQuery({
+      .query({
         queryKey: ["boom"],
         queryFn: () => Promise.reject(new ApiError("query exploded", { status: 500 })),
       })
@@ -29,7 +29,7 @@ describe("QueryCache error notifications", () => {
     const client = createAppQueryClient({ defaultOptions: { queries: { retry: false } } });
 
     await client
-      .fetchQuery({
+      .query({
         queryKey: ["boom2"],
         queryFn: () => Promise.reject(new ApiError("raw", { status: 500 })),
         meta: { errorMessage: "Friendly message" },
@@ -43,7 +43,7 @@ describe("QueryCache error notifications", () => {
     const client = createAppQueryClient({ defaultOptions: { queries: { retry: false } } });
 
     await client
-      .fetchQuery({
+      .query({
         queryKey: ["quiet"],
         queryFn: () => Promise.reject(new ApiError("silent", { status: 500 })),
         meta: { suppressErrorNotification: true },
@@ -60,10 +60,13 @@ describe("MutationCache notifications", () => {
   it("emits a success toast from meta.successMessage", async () => {
     const client = createAppQueryClient();
 
-    await client.getMutationCache().build(client, {
-      mutationFn: () => Promise.resolve({ ok: true }),
-      meta: { successMessage: "Saved!" },
-    }).execute(undefined);
+    await client
+      .getMutationCache()
+      .build(client, {
+        mutationFn: () => Promise.resolve({ ok: true }),
+        meta: { successMessage: "Saved!" },
+      })
+      .execute(undefined);
 
     await waitFor(() => expect(kinds()).toContainEqual({ kind: "success", message: "Saved!" }));
   });
